@@ -59,7 +59,6 @@ export function UserMessage({ content, parts }: UserMessageProps) {
                 height: '26px',
                 objectFit: 'cover',
                 borderRadius: '50%',
-                border: '1px solid var(--cx-border)',
               }}
               loading="eager"
               decoding="sync"
@@ -71,7 +70,6 @@ export function UserMessage({ content, parts }: UserMessageProps) {
                 height: '26px',
                 borderRadius: '50%',
                 background: 'var(--cx-hover)',
-                border: '1px solid var(--cx-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -108,7 +106,7 @@ export function UserMessage({ content, parts }: UserMessageProps) {
             className="devcure-user-message"
             style={{
               background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
-              border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 75%)',
+              border: 'none',
               borderRadius: '14px 14px 4px 14px',
               padding: '10px 14px',
               maxWidth: '85%',
@@ -136,7 +134,6 @@ export function UserMessage({ content, parts }: UserMessageProps) {
               style={{
                 borderRadius: '10px',
                 overflow: 'hidden',
-                border: '1px solid var(--cx-border)',
               }}
             >
               <img
@@ -153,7 +150,7 @@ export function UserMessage({ content, parts }: UserMessageProps) {
         className="devcure-user-message"
         style={{
           background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
-          border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 75%)',
+          border: 'none',
           borderRadius: '14px 14px 4px 14px',
           padding: '10px 14px',
           maxWidth: '85%',

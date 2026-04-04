@@ -97,41 +97,14 @@ export const AssistantMessage = memo(
     } = filteredAnnotations.find((annotation) => annotation.type === 'usage')?.value;
 
     return (
-      <div style={{ overflow: 'hidden', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', width: '100%' }}>
-          <div
-            style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--cx-accent-vivid), var(--cx-accent-primary))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              marginTop: '2px',
-              boxShadow: '0 0 12px color-mix(in srgb, var(--cx-accent-vivid), transparent 60%)',
-              fontSize: '14px',
-            }}
-          >
-            🩺
-          </div>
-
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '6px',
-              }}
-            >
+      <div style={{ width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <span
                 style={{
                   color: 'var(--cx-accent-vivid)',
                   fontSize: '11px',
                   fontWeight: 600,
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                 }}
               >
@@ -291,17 +264,15 @@ export const AssistantMessage = memo(
                   </div>
                 )}
               </div>
-            </div>
+        </div>
 
-            <div
-              className="devcure-ai-message"
-              style={{ color: 'var(--cx-text-primary)', position: 'relative', zIndex: 10 }}
-            >
-              <Markdown append={append} chatMode={chatMode} setChatMode={setChatMode} model={model} provider={provider} html>
-                {content}
-              </Markdown>
-            </div>
-          </div>
+        <div
+          className="devcure-ai-message"
+          style={{ color: 'var(--cx-text-primary)' }}
+        >
+          <Markdown append={append} chatMode={chatMode} setChatMode={setChatMode} model={model} provider={provider} html>
+            {content}
+          </Markdown>
         </div>
       </div>
     );

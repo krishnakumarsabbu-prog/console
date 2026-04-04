@@ -83,13 +83,10 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
   return (
     <div
       style={{
-        background: 'var(--cx-surface)',
-        border: '1px solid var(--cx-border)',
-        borderRadius: '14px',
+        background: 'color-mix(in srgb, var(--cx-text-primary), transparent 95%)',
+        borderRadius: '12px',
         overflow: 'hidden',
         width: '100%',
-        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-        boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
       }}
       className="artifact-card"
     >
@@ -115,10 +112,7 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
             width: '32px',
             height: '32px',
             borderRadius: '8px',
-            background: isLoading
-              ? 'linear-gradient(135deg, var(--cx-accent-glow), var(--cx-bg))'
-              : 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
-            border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 70%)',
+            background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -193,9 +187,7 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            padding: '10px 16px',
-            borderTop: '1px solid var(--cx-border)',
-            background: 'color-mix(in srgb, var(--cx-bg), transparent 40%)',
+            padding: '8px 16px 12px',
           }}
         >
           <div
@@ -237,9 +229,7 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
           >
             <div
               style={{
-                borderTop: '1px solid var(--cx-border)',
-                padding: '14px 16px',
-                background: 'color-mix(in srgb, var(--cx-bg), transparent 30%)',
+                padding: '10px 16px 14px',
               }}
             >
               <ActionList actions={actions} />
@@ -263,7 +253,6 @@ function ShellCodeBlock({ classsName, code }: ShellCodeBlockProps) {
       style={{
         borderRadius: '8px',
         overflow: 'hidden',
-        border: '1px solid var(--cx-border)',
         marginTop: '6px',
       }}
       dangerouslySetInnerHTML={{
