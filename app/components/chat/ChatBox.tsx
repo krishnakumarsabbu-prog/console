@@ -83,10 +83,10 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
               gradientUnits="userSpaceOnUse"
               gradientTransform="rotate(-45)"
             >
-              <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0%"></stop>
-              <stop offset="40%" stopColor="#2dd4bf" stopOpacity="80%"></stop>
-              <stop offset="50%" stopColor="#3b82f6" stopOpacity="80%"></stop>
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0%"></stop>
+              <stop offset="0%" stopColor="var(--cx-accent-vivid)" stopOpacity="0%"></stop>
+              <stop offset="40%" stopColor="var(--cx-accent-vivid)" stopOpacity="80%"></stop>
+              <stop offset="50%" stopColor="var(--cx-accent-primary)" stopOpacity="80%"></stop>
+              <stop offset="100%" stopColor="var(--cx-accent-primary)" stopOpacity="0%"></stop>
             </linearGradient>
             <linearGradient id="shine-gradient">
               <stop offset="0%" stopColor="white" stopOpacity="0%"></stop>
@@ -171,24 +171,24 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
         <textarea
           ref={props.textareaRef}
           className={classNames(
-            'w-full pl-4 pt-4 pr-16 outline-none resize-none text-gray-200 placeholder-gray-500 bg-transparent text-sm',
+            'w-full pl-4 pt-4 pr-16 outline-none resize-none bg-transparent text-sm',
             'transition-all duration-200',
           )}
           onDragEnter={(e) => {
             e.preventDefault();
-            e.currentTarget.style.border = '2px solid #2dd4bf';
+            e.currentTarget.style.border = '2px solid var(--cx-accent-vivid)';
           }}
           onDragOver={(e) => {
             e.preventDefault();
-            e.currentTarget.style.border = '2px solid #2dd4bf';
+            e.currentTarget.style.border = '2px solid var(--cx-accent-vivid)';
           }}
           onDragLeave={(e) => {
             e.preventDefault();
-            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)';
+            e.currentTarget.style.border = '1px solid var(--cx-border)';
           }}
           onDrop={(e) => {
             e.preventDefault();
-            e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)';
+            e.currentTarget.style.border = '1px solid var(--cx-border)';
 
             const files = Array.from(e.dataTransfer.files);
             files.forEach((file) => {
@@ -263,7 +263,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
             <IconButton
               title="Upload file"
               className="transition-all"
-              style={{ color: '#64748b' }}
+              style={{ color: 'var(--cx-text-muted)' }}
               onClick={() => props.handleFileUpload()}
             >
               <Icon name="paperclip" />
@@ -273,7 +273,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
               title="Enhance prompt"
               disabled={props.input.length === 0 || props.enhancingPrompt}
               className={classNames('transition-all', props.enhancingPrompt ? 'opacity-100' : '')}
-              style={{ color: props.enhancingPrompt ? '#38bdf8' : '#64748b' }}
+              style={{ color: props.enhancingPrompt ? 'var(--cx-accent-vivid)' : 'var(--cx-text-muted)' }}
               onClick={() => {
                 props.enhancePrompt?.();
                 toast.success('Prompt enhanced!');
@@ -299,7 +299,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                   'transition-all flex items-center gap-1 px-1.5',
                   props.chatMode === 'discuss' ? 'cx-btn-active' : '',
                 )}
-                style={{ color: props.chatMode === 'discuss' ? '#38bdf8' : '#64748b' }}
+                style={{ color: props.chatMode === 'discuss' ? 'var(--cx-accent-vivid)' : 'var(--cx-text-muted)' }}
                 onClick={() => {
                   props.setChatMode?.(props.chatMode === 'discuss' ? 'build' : 'discuss');
                 }}
@@ -313,13 +313,13 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
               className={classNames('transition-all flex items-center gap-1', {
                 'cx-btn-active': props.isModelSettingsCollapsed,
               })}
-              style={{ color: props.isModelSettingsCollapsed ? '#38bdf8' : '#64748b' }}
+              style={{ color: props.isModelSettingsCollapsed ? 'var(--cx-accent-vivid)' : 'var(--cx-text-muted)' }}
               onClick={() => props.setIsModelSettingsCollapsed(!props.isModelSettingsCollapsed)}
               disabled={!props.providerList || props.providerList.length === 0}
             >
               <Icon name={props.isModelSettingsCollapsed ? 'caret-right' : 'caret-down'} />
               {props.isModelSettingsCollapsed ? (
-                <span className="text-xs font-mono" style={{ color: '#94a3b8' }}>
+                <span className="text-xs font-mono" style={{ color: 'var(--cx-text-secondary)' }}>
                   {props.model}
                 </span>
               ) : null}
@@ -327,8 +327,11 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
           </div>
           {props.input.length > 3 ? (
             <div className="text-xs text-gray-500">
-              Use <kbd className="kdb px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.08)] text-gray-400">Shift</kbd> +{' '}
-              <kbd className="kdb px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.08)] text-gray-400">Return</kbd> a new line
+              <span style={{ color: 'var(--cx-text-muted)' }}>Use </span>
+              <kbd className="kdb px-1.5 py-0.5 rounded" style={{ background: 'var(--cx-hover)', color: 'var(--cx-text-secondary)', border: '1px solid var(--cx-border)' }}>Shift</kbd>
+              <span style={{ color: 'var(--cx-text-muted)' }}> + </span>
+              <kbd className="kdb px-1.5 py-0.5 rounded" style={{ background: 'var(--cx-hover)', color: 'var(--cx-text-secondary)', border: '1px solid var(--cx-border)' }}>Return</kbd>
+              <span style={{ color: 'var(--cx-text-muted)' }}> a new line</span>
             </div>
           ) : null}
           <ExpoQrModal open={props.qrModalOpen} onClose={() => props.setQrModalOpen(false)} />

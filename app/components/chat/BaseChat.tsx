@@ -394,7 +394,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       <div
         ref={ref}
         className={classNames(styles.BaseChat, 'relative flex h-full w-full overflow-hidden')}
-        style={{ backgroundColor: '#080c14' }}
+        style={{ backgroundColor: 'var(--cx-bg)' }}
         data-chat-visible={showChat}
       >
         {/* === PREMIUM AMBIENT BACKGROUND === */}
@@ -437,14 +437,14 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     Build. Debug. Ship.
                   </span>
                   <br />
-                  <span style={{ color: '#64748b', fontWeight: 400 }}>
+                  <span style={{ color: 'var(--cx-text-muted)', fontWeight: 400 }}>
                     With intelligence.
                   </span>
                 </h1>
 
                 <p
                   className="text-[15px] lg:text-[16px] mb-10 leading-relaxed cx-entrance cx-anim-delay-200 max-w-lg mx-auto"
-                  style={{ color: '#475569', lineHeight: 1.7 }}
+                  style={{ color: 'var(--cx-text-secondary)', lineHeight: 1.7 }}
                 >
                   Describe what you want to build or fix. Cortex Console generates, debugs, and deploys production-ready code.
                 </p>
@@ -592,7 +592,7 @@ function ScrollToBottom() {
       <>
         <div
           className="sticky bottom-0 left-0 right-0 h-16 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, #080c14 0%, transparent 100%)' }}
+          style={{ background: 'linear-gradient(to top, var(--cx-bg) 0%, transparent 100%)' }}
         />
         <button
           className="cx-scroll-pill sticky z-50 bottom-2 mx-auto"

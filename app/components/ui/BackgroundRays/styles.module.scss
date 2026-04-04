@@ -1,10 +1,8 @@
 .rayContainer {
-  // Theme-specific colors
-  --ray-color-primary: color-mix(in srgb, var(--primary-color), transparent 30%);
-  --ray-color-secondary: color-mix(in srgb, var(--secondary-color), transparent 30%);
-  --ray-color-accent: color-mix(in srgb, var(--accent-color), transparent 30%);
+  --ray-color-primary: color-mix(in srgb, var(--cx-accent-vivid), transparent 80%);
+  --ray-color-secondary: color-mix(in srgb, var(--cx-accent-primary), transparent 85%);
+  --ray-color-accent: color-mix(in srgb, var(--cx-accent-secondary, var(--cx-accent-vivid)), transparent 82%);
 
-  // Theme-specific gradients
   --ray-gradient-primary: radial-gradient(var(--ray-color-primary) 0%, transparent 70%);
   --ray-gradient-secondary: radial-gradient(var(--ray-color-secondary) 0%, transparent 70%);
   --ray-gradient-accent: radial-gradient(var(--ray-color-accent) 0%, transparent 70%);
@@ -15,28 +13,22 @@
   animation: fadeIn 1.5s ease-out;
   pointer-events: none;
   z-index: 0;
-  //   background-color: transparent;
+  mix-blend-mode: screen;
 
-  :global(html[data-theme='dark']) & {
-    mix-blend-mode: screen;
-  }
-
-  :global(html[data-theme='light']) & {
+  :global(html[data-theme='ivory']) & {
     mix-blend-mode: multiply;
+    opacity: 0.5;
   }
 }
 
 .lightRay {
   position: absolute;
   border-radius: 100%;
+  mix-blend-mode: screen;
 
-  :global(html[data-theme='dark']) & {
-    mix-blend-mode: screen;
-  }
-
-  :global(html[data-theme='light']) & {
+  :global(html[data-theme='ivory']) & {
     mix-blend-mode: multiply;
-    opacity: 0.4;
+    opacity: 0.35;
   }
 }
 
