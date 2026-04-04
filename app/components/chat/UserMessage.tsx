@@ -26,7 +26,6 @@ interface UserMessageProps {
 export function UserMessage({ content, parts }: UserMessageProps) {
   const profile = useNanoStore(profileStore);
 
-  // Extract images from parts - look for file parts with image mime types
   const images =
     parts?.filter(
       (part): part is FileUIPart => part.type === 'file' && 'mimeType' in part && part.mimeType.startsWith('image/'),
@@ -37,37 +36,90 @@ export function UserMessage({ content, parts }: UserMessageProps) {
     const textContent = stripMetadata(textItem?.text || '');
 
     return (
-      <div className="overflow-hidden flex flex-col gap-3 items-center ">
-        <div className="flex flex-row items-start justify-center overflow-hidden shrink-0 self-start">
-          {profile?.avatar || profile?.username ? (
-            <div className="flex items-end gap-2">
-              <img
-                src={profile.avatar}
-                alt={profile?.username || 'User'}
-                className="w-[25px] h-[25px] object-cover rounded-full"
-                loading="eager"
-                decoding="sync"
-              />
-              <span className="text-bolt-elements-textPrimary text-sm">
-                {profile?.username ? profile.username : ''}
-              </span>
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'flex-end', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', alignSelf: 'flex-end' }}>
+          {profile?.username && (
+            <span
+              style={{
+                color: 'var(--cx-text-muted)',
+                fontSize: '11px',
+                fontWeight: 500,
+                letterSpacing: '0.02em',
+              }}
+            >
+              {profile.username}
+            </span>
+          )}
+          {profile?.avatar ? (
+            <img
+              src={profile.avatar}
+              alt={profile?.username || 'User'}
+              style={{
+                width: '26px',
+                height: '26px',
+                objectFit: 'cover',
+                borderRadius: '50%',
+                border: '1px solid var(--cx-border)',
+              }}
+              loading="eager"
+              decoding="sync"
+            />
           ) : (
-            <Icon name="user" className="text-accent-500 text-2xl" />
+            <div
+              style={{
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                background: 'var(--cx-hover)',
+                border: '1px solid var(--cx-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--cx-text-muted)',
+                fontSize: '13px',
+              }}
+            >
+              <Icon name="user" />
+            </div>
           )}
         </div>
-        <div className="flex flex-col gap-4 devcure-user-message text-bolt-elements-textPrimary relative z-10 mr-auto max-w-[85%]">
-          {textContent && <Markdown html>{textContent}</Markdown>}
-          {images.map((item, index) => (
-            <img
-              key={index}
-              src={`data:${item.mimeType};base64,${item.data}`}
-              alt={`Image ${index + 1}`}
-              className="max-w-full h-auto rounded-lg"
-              style={{ maxHeight: '512px', objectFit: 'contain' }}
-            />
-          ))}
-        </div>
+
+        {images.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'flex-end' }}>
+            {images.map((item, index) => (
+              <img
+                key={index}
+                src={`data:${item.mimeType};base64,${item.data}`}
+                alt={`Image ${index + 1}`}
+                style={{
+                  maxWidth: '240px',
+                  maxHeight: '180px',
+                  objectFit: 'contain',
+                  borderRadius: '10px',
+                  border: '1px solid var(--cx-border)',
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {textContent && (
+          <div
+            className="devcure-user-message"
+            style={{
+              background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
+              border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 75%)',
+              borderRadius: '14px 14px 4px 14px',
+              padding: '10px 14px',
+              maxWidth: '85%',
+              color: 'var(--cx-text-primary)',
+              fontSize: '14px',
+              lineHeight: '1.55',
+            }}
+          >
+            <Markdown html>{textContent}</Markdown>
+          </div>
+        )}
       </div>
     );
   }
@@ -75,23 +127,45 @@ export function UserMessage({ content, parts }: UserMessageProps) {
   const textContent = stripMetadata(content);
 
   return (
-    <div className="flex flex-col devcure-user-message text-bolt-elements-textPrimary relative z-10 ml-auto max-w-[85%] w-auto">
-      <div className="flex gap-3.5 mb-4">
-        {images.map((item, index) => (
-          <div key={index} className="relative flex rounded-lg overflow-hidden">
-            <div className="h-16 w-16 bg-transparent outline-none">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '100%', gap: '8px' }}>
+      {images.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'flex-end' }}>
+          {images.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                borderRadius: '10px',
+                overflow: 'hidden',
+                border: '1px solid var(--cx-border)',
+              }}
+            >
               <img
                 src={`data:${item.mimeType};base64,${item.data}`}
                 alt={`Image ${index + 1}`}
-                className="h-full w-full rounded-lg"
-                style={{ objectFit: 'fill' }}
+                style={{ height: '64px', width: '64px', objectFit: 'fill', display: 'block' }}
               />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      )}
+
+      <div
+        className="devcure-user-message"
+        style={{
+          background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
+          border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 75%)',
+          borderRadius: '14px 14px 4px 14px',
+          padding: '10px 14px',
+          maxWidth: '85%',
+          color: 'var(--cx-text-primary)',
+          fontSize: '14px',
+          lineHeight: '1.55',
+        }}
+      >
+        <Markdown html>{textContent}</Markdown>
       </div>
-      <Markdown html>{textContent}</Markdown>
-    </div>);
+    </div>
+  );
 }
 
 function stripMetadata(content: string) {

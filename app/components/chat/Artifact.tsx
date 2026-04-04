@@ -37,9 +37,7 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
 
   const actionsStore = useMemo(() => {
     return computed(artifact?.runner?.actions ?? map({}), (actions) => {
-      // Filter out Supabase actions except for migrations
       return Object.values(actions).filter((action) => {
-        // Exclude actions with type 'shell' that contain 'supabase' in their content
         return !(action.type === 'shell' && action.content?.includes('supabase'));
       });
     });
@@ -47,14 +45,15 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
 
   const actions = useNanoStore(actionsStore);
 
-  const toggleActions = () => {
+  const toggleActions = (e: React.MouseEvent) => {
+    e.stopPropagation();
     userToggledActions.current = true;
     setShowActions(!showActions);
   };
 
   useEffect(() => {
-    if (actions.length && !showActions && !userToggledActions.current) {
-      setShowActions(true);
+    if (actions.length && !userToggledActions.current) {
+      setShowActions(false);
     }
 
     if (actions.length !== 0 && artifact.type === 'bundled') {
@@ -68,95 +67,187 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
     }
   }, [actions, artifact.type, allActionFinished]);
 
-  // Determine the dynamic title based on state for bundled artifacts
   const dynamicTitle =
     artifact?.type === 'bundled'
       ? allActionFinished
         ? artifact?.id === 'restored-project-setup'
-          ? 'Project Restored' // Title when restore is complete
-          : 'Project Created' // Title when initial creation is complete
+          ? 'Project Restored'
+          : 'Project Created'
         : artifact?.id === 'restored-project-setup'
-          ? 'Restoring Project...' // Title during restore
-          : 'Creating Project...' // Title during initial creation
-      : artifact?.title; // Fallback to original title for non-bundled or if artifact is missing
+          ? 'Restoring Project...'
+          : 'Creating Project...'
+      : artifact?.title;
+
+  const isLoading = artifact?.type === 'bundled' && !allActionFinished;
 
   return (
-    <>
-      <div className="artifact border border-[rgba(255,255,255,0.05)] bg-[rgba(10,15,28,0.4)] backdrop-blur-md shadow-lg flex flex-col overflow-hidden rounded-2xl w-full transition-all duration-300 hover:border-[rgba(20,241,217,0.15)] hover:shadow-[0_4px_25px_rgba(20,241,217,0.05)]">
-        <div className="flex">
-          <button
-            className="flex items-stretch bg-transparent hover:bg-[rgba(255,255,255,0.02)] transition-colors w-full overflow-hidden"
-            onClick={() => {
-              const showWorkbench = workbenchStore.showWorkbench.get();
-              workbenchStore.showWorkbench.set(!showWorkbench);
+    <div
+      style={{
+        background: 'var(--cx-surface)',
+        border: '1px solid var(--cx-border)',
+        borderRadius: '14px',
+        overflow: 'hidden',
+        width: '100%',
+        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+        boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
+      }}
+      className="artifact-card"
+    >
+      <button
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          width: '100%',
+          background: 'transparent',
+          border: 'none',
+          padding: '14px 16px',
+          cursor: 'pointer',
+          textAlign: 'left',
+        }}
+        onClick={() => {
+          const showWorkbench = workbenchStore.showWorkbench.get();
+          workbenchStore.showWorkbench.set(!showWorkbench);
+        }}
+      >
+        <div
+          style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            background: isLoading
+              ? 'linear-gradient(135deg, var(--cx-accent-glow), var(--cx-bg))'
+              : 'color-mix(in srgb, var(--cx-accent-vivid), transparent 88%)',
+            border: '1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 70%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {isLoading ? (
+            <div
+              className="i-svg-spinners:90-ring-with-bg"
+              style={{ color: 'var(--cx-accent-vivid)', fontSize: '14px' }}
+            />
+          ) : (
+            <div
+              className="i-ph:folder-open-duotone"
+              style={{ color: 'var(--cx-accent-vivid)', fontSize: '14px' }}
+            />
+          )}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              color: 'var(--cx-text-primary)',
+              fontSize: '13px',
+              fontWeight: 500,
+              lineHeight: '18px',
+              letterSpacing: '-0.01em',
             }}
           >
-            <div className="px-5 p-3.5 w-full text-left">
-              <div className="w-full text-bolt-elements-textPrimary font-medium leading-5 text-sm">
-                {/* Use the dynamic title here */}
-                {dynamicTitle}
-              </div>
-              <div className="w-full w-full text-bolt-elements-textSecondary text-xs mt-0.5">
-                Click to open Workbench
-              </div>
-            </div>
-          </button>
-          {artifact?.type !== 'bundled' && <div className="bg-bolt-elements-artifacts-borderColor w-[1px]" />}
-          <AnimatePresence>
-            {actions.length && artifact?.type !== 'bundled' && (
-              <motion.button
-                initial={{ width: 0 }}
-                animate={{ width: 'auto' }}
-                exit={{ width: 0 }}
-                transition={{ duration: 0.15, ease: cubicEasingFn }}
-                className="bg-transparent hover:bg-[rgba(255,255,255,0.02)] transition-colors"
-                onClick={toggleActions}
-              >
-                <div className="p-4">
-                  <Icon name={showActions ? 'chevron-up' : 'chevron-down'} />
-                </div>
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </div>
-        {artifact?.type === 'bundled' && (
-          <div className="flex items-center gap-1.5 p-5 bg-[rgba(0,0,0,0.2)] border-t border-[rgba(255,255,255,0.05)]">
-            <div className={classNames('text-lg', getIconColor(allActionFinished ? 'complete' : 'running'))}>
-              {allActionFinished ? (
-                <Icon name="check" />
-              ) : (
-                <div className="i-svg-spinners:90-ring-with-bg"></div>
-              )}
-            </div>
-            <div className="text-bolt-elements-textPrimary font-medium leading-5 text-sm">
-              {/* This status text remains the same */}
-              {allActionFinished
-                ? artifact?.id === 'restored-project-setup'
-                  ? 'Restore files from snapshot'
-                  : 'Initial files created'
-                : 'Creating initial files'}
-            </div>
+            {dynamicTitle}
           </div>
-        )}
-        <AnimatePresence>
-          {artifact?.type !== 'bundled' && showActions && actions.length > 0 && (
-            <motion.div
-              className="actions"
-              initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              exit={{ height: '0px' }}
-              transition={{ duration: 0.15 }}
-            >
-              <div className="bg-bolt-elements-artifacts-borderColor h-[1px]" />
+          <div
+            style={{
+              color: 'var(--cx-text-muted)',
+              fontSize: '11px',
+              marginTop: '2px',
+              letterSpacing: '0.01em',
+            }}
+          >
+            Click to open Workbench
+          </div>
+        </div>
 
-              <div className="p-5 text-left bg-[rgba(0,0,0,0.2)]">
-                <ActionList actions={actions} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </>
+        {artifact?.type !== 'bundled' && actions.length > 0 && (
+          <button
+            onClick={toggleActions}
+            style={{
+              background: 'color-mix(in srgb, var(--cx-text-primary), transparent 90%)',
+              border: 'none',
+              borderRadius: '6px',
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+              transition: 'background 0.15s ease',
+              color: 'var(--cx-text-secondary)',
+              fontSize: '11px',
+            }}
+          >
+            <Icon name={showActions ? 'chevron-up' : 'chevron-down'} />
+          </button>
+        )}
+      </button>
+
+      {artifact?.type === 'bundled' && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 16px',
+            borderTop: '1px solid var(--cx-border)',
+            background: 'color-mix(in srgb, var(--cx-bg), transparent 40%)',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '14px',
+              color: allActionFinished ? 'var(--cx-icon-success, #34d399)' : 'var(--cx-accent-vivid)',
+            }}
+          >
+            {allActionFinished ? (
+              <Icon name="check" />
+            ) : (
+              <div className="i-svg-spinners:90-ring-with-bg" />
+            )}
+          </div>
+          <span
+            style={{
+              color: 'var(--cx-text-secondary)',
+              fontSize: '12px',
+              fontWeight: 400,
+            }}
+          >
+            {allActionFinished
+              ? artifact?.id === 'restored-project-setup'
+                ? 'Restore files from snapshot'
+                : 'Initial files created'
+              : 'Creating initial files'}
+          </span>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {artifact?.type !== 'bundled' && showActions && actions.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div
+              style={{
+                borderTop: '1px solid var(--cx-border)',
+                padding: '14px 16px',
+                background: 'color-mix(in srgb, var(--cx-bg), transparent 30%)',
+              }}
+            >
+              <ActionList actions={actions} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 });
 
@@ -168,14 +259,20 @@ interface ShellCodeBlockProps {
 function ShellCodeBlock({ classsName, code }: ShellCodeBlockProps) {
   return (
     <div
-      className={classNames('text-xs [&>pre]:!bg-[rgba(0,0,0,0.3)] [&>pre]:!backdrop-blur-sm [&>pre]:!rounded-xl [&>pre]:!border [&>pre]:!border-[rgba(255,255,255,0.05)] [&>pre]:!p-4', classsName)}
+      className={classNames('text-xs', classsName)}
+      style={{
+        borderRadius: '8px',
+        overflow: 'hidden',
+        border: '1px solid var(--cx-border)',
+        marginTop: '6px',
+      }}
       dangerouslySetInnerHTML={{
         __html: shellHighlighter.codeToHtml(code, {
           lang: 'shell',
           theme: 'dark-plus',
         }),
       }}
-    ></div>
+    />
   );
 }
 
@@ -184,7 +281,7 @@ interface ActionListProps {
 }
 
 const actionVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0 },
 };
 
@@ -199,7 +296,7 @@ export function openArtifactInWorkbench(filePath: any) {
 const ActionList = memo(({ actions }: ActionListProps) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-      <ul className="list-none space-y-2.5">
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {actions.map((action, index) => {
           const { status, type, content } = action;
           const isLast = index === actions.length - 1;
@@ -210,17 +307,21 @@ const ActionList = memo(({ actions }: ActionListProps) => {
               variants={actionVariants}
               initial="hidden"
               animate="visible"
-              transition={{
-                duration: 0.2,
-                ease: cubicEasingFn,
-              }}
+              transition={{ duration: 0.18, ease: cubicEasingFn, delay: index * 0.04 }}
             >
-              <div className="flex items-center gap-1.5 text-sm">
-                <div className={classNames('text-lg', getIconColor(action.status))}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <div
+                  style={{
+                    fontSize: '14px',
+                    width: '18px',
+                    flexShrink: 0,
+                    color: getIconColor(status),
+                  }}
+                >
                   {status === 'running' ? (
                     <>
                       {type !== 'start' ? (
-                        <div className="i-svg-spinners:90-ring-with-bg"></div>
+                        <div className="i-svg-spinners:90-ring-with-bg" />
                       ) : (
                         <Icon name="terminal" />
                       )}
@@ -234,36 +335,40 @@ const ActionList = memo(({ actions }: ActionListProps) => {
                   ) : null}
                 </div>
                 {type === 'file' ? (
-                  <div>
+                  <span style={{ color: 'var(--cx-text-secondary)' }}>
                     Create{' '}
                     <code
-                      className="bg-bolt-elements-artifacts-inlineCode-background text-bolt-elements-artifacts-inlineCode-text px-1.5 py-1 rounded-md text-bolt-elements-item-contentAccent hover:underline cursor-pointer"
+                      style={{
+                        background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 90%)',
+                        color: 'var(--cx-accent-vivid)',
+                        padding: '1px 6px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                        fontFamily: 'ui-monospace, "SF Mono", monospace',
+                      }}
                       onClick={() => openArtifactInWorkbench(action.filePath)}
                     >
                       {action.filePath}
                     </code>
-                  </div>
+                  </span>
                 ) : type === 'shell' ? (
-                  <div className="flex items-center w-full min-h-[28px]">
-                    <span className="flex-1">Run command</span>
-                  </div>
+                  <span style={{ color: 'var(--cx-text-secondary)' }}>Run command</span>
                 ) : type === 'start' ? (
                   <a
                     onClick={(e) => {
                       e.preventDefault();
                       workbenchStore.currentView.set('preview');
                     }}
-                    className="flex items-center w-full min-h-[28px]"
+                    style={{ color: 'var(--cx-accent-vivid)', cursor: 'pointer', textDecoration: 'none' }}
                   >
-                    <span className="flex-1">Start Application</span>
+                    Start Application
                   </a>
                 ) : null}
               </div>
               {(type === 'shell' || type === 'start') && (
                 <ShellCodeBlock
-                  classsName={classNames('mt-1', {
-                    'mb-3.5': !isLast,
-                  })}
+                  classsName={classNames({ 'mb-2': !isLast })}
                   code={content}
                 />
               )}
@@ -275,25 +380,19 @@ const ActionList = memo(({ actions }: ActionListProps) => {
   );
 });
 
-function getIconColor(status: ActionState['status']) {
+function getIconColor(status: ActionState['status']): string {
   switch (status) {
-    case 'pending': {
-      return 'text-bolt-elements-textTertiary';
-    }
-    case 'running': {
-      return 'text-bolt-elements-loader-progress';
-    }
-    case 'complete': {
-      return 'text-bolt-elements-icon-success';
-    }
-    case 'aborted': {
-      return 'text-bolt-elements-textSecondary';
-    }
-    case 'failed': {
-      return 'text-bolt-elements-icon-error';
-    }
-    default: {
-      return undefined;
-    }
+    case 'pending':
+      return 'var(--cx-text-muted)';
+    case 'running':
+      return 'var(--cx-accent-vivid)';
+    case 'complete':
+      return 'var(--bolt-elements-icon-success, #34d399)';
+    case 'aborted':
+      return 'var(--cx-text-secondary)';
+    case 'failed':
+      return 'var(--bolt-elements-icon-error, #f87171)';
+    default:
+      return 'var(--cx-text-muted)';
   }
 }

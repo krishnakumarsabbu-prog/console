@@ -96,93 +96,207 @@ export const AssistantMessage = memo(
       totalTokens: number;
     } = filteredAnnotations.find((annotation) => annotation.type === 'usage')?.value;
 
-
     return (
-      <div className="overflow-hidden w-full">
-        <>
-          <div className=" flex gap-2 items-center text-sm text-[var(--vscode-text-muted)] mb-2">
-            {(codeContext || chatSummary) && (
-              <Popover side="right" align="start" trigger={<Icon name="info" />}>
-                {chatSummary && (
-                  <div className="max-w-chat">
-                    <div className="summary max-h-96 flex flex-col">
-                      <h2 className="border border-[var(--vscode-border)] rounded-md p-4">Summary</h2>
-                      <div style={{ zoom: 0.7 }} className="overflow-y-auto m4">
-                        <Markdown>{chatSummary}</Markdown>
-                      </div>
-                    </div>
-                    {codeContext && (
-                      <div className="code-context flex flex-col p-4 border border-[var(--vscode-border)] rounded-md">
-                        <h2>Context</h2>
-                        <div className="flex gap-4 mt-4 bolt" style={{ zoom: 0.6 }}>
-                          {codeContext.map((x) => {
-                            const normalized = normalizedFilePath(x);
-                            return (
-                              <Fragment key={normalized}>
-                                <code
-                                  className="bg-bolt-elements-artifacts-inlineCode-background text-bolt-elements-artifacts-inlineCode-text px-1.5 py-1 rounded-md text-bolt-elements-item-contentAccent hover:underline cursor-pointer"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    openArtifactInWorkbench(normalized);
-                                  }}
-                                >
-                                  {normalized}
-                                </code>
-                              </Fragment>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="context"></div>
-              </Popover>
-            )}
-            <div className="flex w-full items-center justify-between">
-              {usage && (
-                <div>
-                  Tokens: {usage.totalTokens} (prompt: {usage.promptTokens}, completion: {usage.completionTokens})
-                </div>
-              )}
-              {(onRewind || onFork) && messageId && (
-                <div className="flex gap-2 flex-col lg:flex-row ml-auto">
-                  {onRewind && (
-                    <WithTooltip tooltip="Revert to this message">
-                      <button
-                        onClick={() => onRewind(messageId)}
-                        className="text-xl text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary transition-colors"
-                      >
-                        <Icon name="arrow-counter-clockwise" />
-                      </button>
-                    </WithTooltip>
-                  )}
-                  {onFork && (
-                    <WithTooltip tooltip="Fork chat from this message">
-                      <button
-                        onClick={() => onFork(messageId)}
-                        className="text-xl text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary transition-colors"
-                      >
-                        <Icon name="git-branch" />
-                      </button>
-                    </WithTooltip>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-        <div className="flex items-start gap-3 w-full group">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#00FFD1] to-[#8B5CF6] flex items-center justify-center text-black text-sm shrink-0 mt-1 shadow-[0_0_15px_rgba(0,255,200,0.3)]">
+      <div style={{ overflow: 'hidden', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', width: '100%' }}>
+          <div
+            style={{
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, var(--cx-accent-vivid), var(--cx-accent-primary))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              marginTop: '2px',
+              boxShadow: '0 0 12px color-mix(in srgb, var(--cx-accent-vivid), transparent 60%)',
+              fontSize: '14px',
+            }}
+          >
             🩺
           </div>
 
-          <div className="flex-1 min-w-0 flex flex-col items-start w-full">
-            <div className="text-xs text-[#00FFD1] mb-1 font-semibold tracking-wide drop-shadow-[0_0_5px_rgba(0,255,200,0.5)]">
-              DevCure AI
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '6px',
+              }}
+            >
+              <span
+                style={{
+                  color: 'var(--cx-accent-vivid)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                DevCure AI
+              </span>
+
+              {(codeContext || chatSummary) && (
+                <Popover side="right" align="start" trigger={
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--cx-text-muted)',
+                      cursor: 'pointer',
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderRadius: '4px',
+                      transition: 'color 0.15s ease',
+                    }}
+                  >
+                    <Icon name="info" />
+                  </button>
+                }>
+                  {chatSummary && (
+                    <div style={{ maxWidth: '320px' }}>
+                      <div
+                        style={{
+                          border: '1px solid var(--cx-border)',
+                          borderRadius: '8px',
+                          padding: '12px',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        <h2
+                          style={{
+                            color: 'var(--cx-text-primary)',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            marginBottom: '8px',
+                          }}
+                        >
+                          Summary
+                        </h2>
+                        <div style={{ zoom: 0.7, maxHeight: '240px', overflowY: 'auto' }}>
+                          <Markdown>{chatSummary}</Markdown>
+                        </div>
+                      </div>
+                      {codeContext && (
+                        <div
+                          style={{
+                            border: '1px solid var(--cx-border)',
+                            borderRadius: '8px',
+                            padding: '12px',
+                          }}
+                        >
+                          <h2
+                            style={{
+                              color: 'var(--cx-text-primary)',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              marginBottom: '8px',
+                            }}
+                          >
+                            Context
+                          </h2>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', zoom: 0.85 }}>
+                            {codeContext.map((x) => {
+                              const normalized = normalizedFilePath(x);
+                              return (
+                                <Fragment key={normalized}>
+                                  <code
+                                    style={{
+                                      background: 'color-mix(in srgb, var(--cx-accent-vivid), transparent 90%)',
+                                      color: 'var(--cx-accent-vivid)',
+                                      padding: '2px 6px',
+                                      borderRadius: '4px',
+                                      fontSize: '11px',
+                                      cursor: 'pointer',
+                                      fontFamily: 'ui-monospace, "SF Mono", monospace',
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      openArtifactInWorkbench(normalized);
+                                    }}
+                                  >
+                                    {normalized}
+                                  </code>
+                                </Fragment>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Popover>
+              )}
+
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {usage && (
+                  <span
+                    style={{
+                      color: 'var(--cx-text-muted)',
+                      fontSize: '10px',
+                      letterSpacing: '0.01em',
+                    }}
+                  >
+                    {usage.totalTokens.toLocaleString()} tokens
+                  </span>
+                )}
+                {(onRewind || onFork) && messageId && (
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    {onRewind && (
+                      <WithTooltip tooltip="Revert to this message">
+                        <button
+                          onClick={() => onRewind(messageId)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--cx-text-muted)',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            fontSize: '14px',
+                            transition: 'color 0.15s ease, background 0.15s ease',
+                          }}
+                        >
+                          <Icon name="arrow-counter-clockwise" />
+                        </button>
+                      </WithTooltip>
+                    )}
+                    {onFork && (
+                      <WithTooltip tooltip="Fork chat from this message">
+                        <button
+                          onClick={() => onFork(messageId)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--cx-text-muted)',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            fontSize: '14px',
+                            transition: 'color 0.15s ease, background 0.15s ease',
+                          }}
+                        >
+                          <Icon name="git-branch" />
+                        </button>
+                      </WithTooltip>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="devcure-ai-message text-bolt-elements-textPrimary relative z-10">
+
+            <div
+              className="devcure-ai-message"
+              style={{ color: 'var(--cx-text-primary)', position: 'relative', zIndex: 10 }}
+            >
               <Markdown append={append} chatMode={chatMode} setChatMode={setChatMode} model={model} provider={provider} html>
                 {content}
               </Markdown>

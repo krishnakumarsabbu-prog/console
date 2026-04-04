@@ -3,7 +3,6 @@ import { Fragment } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
-import { Icon } from '~/components/ui/Icon';
 import { useLocation } from 'react-router-dom';
 import { db, chatId } from '~/lib/persistence/useChatHistory';
 import { forkChat } from '~/lib/persistence/db';
@@ -51,7 +50,7 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
     };
 
     return (
-      <div id={id} className={classNames('flex flex-col gap-[18px] p-[20px]', props.className)} ref={ref}>
+      <div id={id} className={classNames('flex flex-col', props.className)} style={{ padding: '24px 20px', gap: '24px', display: 'flex', flexDirection: 'column' }} ref={ref}>
         {messages.length > 0
           ? messages.map((message, index) => {
             const { role, content, id: messageId, annotations, parts } = message;
@@ -65,9 +64,18 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
             return (
               <div
                 key={index}
-                className="flex w-full rounded-lg"
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  justifyContent: isUserMessage ? 'flex-end' : 'flex-start',
+                }}
               >
-                <div className="grid grid-col-1 w-full">
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: isUserMessage ? '85%' : '100%',
+                  }}
+                >
                   {isUserMessage ? (
                     <UserMessage content={content} parts={parts} />
                   ) : (
@@ -92,8 +100,45 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
           })
           : null}
         {isStreaming && (
-          <div className="flex justify-center w-full my-4">
-            <Icon name="spinner" className="animate-spin text-bolt-elements-item-contentAccent text-4xl spin" size={40} />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '4px 0',
+            }}
+          >
+            <div
+              style={{
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--cx-accent-vivid), var(--cx-accent-primary))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '14px',
+                boxShadow: '0 0 12px color-mix(in srgb, var(--cx-accent-vivid), transparent 60%)',
+              }}
+            >
+              🩺
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: '5px',
+                    height: '5px',
+                    borderRadius: '50%',
+                    background: 'var(--cx-accent-vivid)',
+                    animation: `pulse-dot 1.4s ease-in-out ${i * 0.16}s infinite`,
+                    opacity: 0.7,
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
