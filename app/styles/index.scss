@@ -1,0 +1,846 @@
+@use 'variables.scss';
+@use 'z-index.scss';
+@use 'animations.scss';
+@use 'components/terminal.scss';
+@use 'components/resize-handle.scss';
+@use 'components/code.scss';
+@use 'components/editor.scss';
+@use 'components/toast.scss';
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --vscode-bg: #020617;
+  --vscode-sidebar-bg: #0d1423;
+  --vscode-editor-bg: #020617;
+  --vscode-border: rgba(255, 255, 255, 0.08);
+  --vscode-text: #E2E8F0;
+  --vscode-text-muted: #94A3B8;
+  --vscode-hover: #131b2e;
+  --vscode-selected: rgba(45, 212, 191, 0.15);
+  --vscode-active-border: #00FFD1;
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--vscode-bg);
+  color: var(--vscode-text);
+}
+
+html {
+  color-scheme: light;
+}
+
+#root {
+  height: 100%;
+  background-color: var(--bolt-elements-bg-depth-1);
+}
+
+// Global resets for form elements to prevent white leaks
+input,
+textarea,
+select,
+button {
+  background-color: transparent !important;
+  color: inherit !important;
+  border-color: var(--bolt-elements-borderColor);
+
+  &:focus {
+    outline: 1px solid var(--bolt-elements-borderColorActive);
+    box-shadow: 0 0 0 1px var(--bolt-elements-borderColorActive);
+  }
+}
+
+// Ensure terminal doesn't have white background
+.xterm-viewport,
+.xterm-screen,
+canvas.xterm-link-layer,
+canvas.xterm-cursor-layer,
+canvas.xterm-text-layer,
+canvas.xterm-selection-layer {
+  background-color: var(--bolt-elements-bg-depth-1) !important;
+}
+
+:root {
+  --gradient-opacity: 0.8;
+}
+
+.modern-scrollbar {
+  overflow: auto;
+
+  // WebKit scrollbar styling
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--bolt-elements-scrollbar-thumb, rgba(117, 113, 94, 0.4));
+    border-radius: 9999px; // pill shape
+    border: 1px solid transparent; // for padding-like effect
+    background-clip: content-box;
+    transition: background-color 0.2s ease-in-out; // Add transition
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bolt-elements-scrollbar-thumb-hover, rgba(117, 113, 94, 0.6));
+  }
+
+  // Firefox support
+  scrollbar-width: thin;
+  scrollbar-color: var(--bolt-elements-scrollbar-thumb, rgba(117, 113, 94, 0.4)) transparent;
+}
+
+[data-theme='monokai'] {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bolt-elements-scrollbar-thumb) var(--bolt-elements-scrollbar-track);
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--bolt-elements-scrollbar-track);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--bolt-elements-scrollbar-thumb);
+    border-radius: 10px;
+    border: 1px solid var(--bolt-elements-scrollbar-track);
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bolt-elements-scrollbar-thumb-hover);
+  }
+
+  /* Ensure CodeMirror scroller and other heavy containers follow the thin style */
+  .cm-scroller::-webkit-scrollbar,
+  .modern-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+.modern-scrollbar-invert {
+  &::-webkit-scrollbar-thumb {
+    // Override with a contrasting color, e.g., primary text color with transparency
+    background-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 70%);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    // Darker/more opaque version on hover
+    background-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 50%);
+  }
+
+  // Firefox support for inverted colors
+  scrollbar-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 50%) transparent;
+}
+
+/* ========================================
+   DevCure Theme — Production Grade
+   Principal Engineer Level CSS
+   ======================================== */
+
+:root {
+  --devcure-bg: #0A0F1C;
+  --devcure-surface: #0d1423;
+  --devcure-border: rgba(255, 255, 255, 0.08);
+  --devcure-teal: #14F1D9;
+  --devcure-blue: #3b82f6;
+  --devcure-cyan: #22d3ee;
+  --devcure-purple: #7C5CFF;
+}
+
+/* Enable CSS custom property animation for border rotation */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ---- Gradient text for hero ---- */
+.devcure-gradient-text {
+  background: linear-gradient(135deg, #14F1D9 0%, #22d3ee 35%, #7C5CFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---- Hero section ---- */
+.devcure-hero {
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================================================
+   STARFIELD — PHOTOREALISTIC GALAXY NIGHT SKY
+   Dense stars + nebula glow clusters for galaxy depth
+   ========================================================= */
+
+.devcure-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+/* Layer 1 — Star dust: extremely dense, fine points */
+.devcure-stars-sm {
+  background-image:
+    radial-gradient(1px 1px at 4% 8%, #fff, transparent),
+    radial-gradient(1px 1px at 12% 24%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 22% 56%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 30% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 38% 72%, rgba(255,255,255,0.65), transparent),
+    radial-gradient(1px 1px at 48% 38%, rgba(255,255,255,0.75), transparent),
+    radial-gradient(1px 1px at 56% 82%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 64% 4%, #fff, transparent),
+    radial-gradient(1px 1px at 72% 48%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 78% 92%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 86% 16%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 92% 66%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 18% 42%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 52% 14%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 96% 34%, rgba(255,255,255,0.65), transparent);
+  background-size: 150px 150px;
+  opacity: 1;
+  animation: devcure-star-drift 100s linear infinite, devcure-twinkle-soft 4s ease-in-out infinite;
+}
+
+/* Layer 2 — Medium stars: bright, scattered */
+.devcure-stars-md {
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 22%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 18% 68%, rgba(220,235,255,0.85), transparent),
+    radial-gradient(1.5px 1.5px at 32% 42%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 48% 12%, rgba(200,220,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 58% 78%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 72% 32%, rgba(210,225,255,0.85), transparent),
+    radial-gradient(1.5px 1.5px at 84% 56%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 92% 88%, rgba(220,235,255,0.8), transparent),
+    radial-gradient(1.5px 1.5px at 42% 92%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 66% 6%, rgba(255,255,255,0.85), transparent);
+  background-size: 250px 250px;
+  opacity: 0.9;
+  animation: devcure-star-drift 140s linear infinite, devcure-twinkle-soft 6s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+/* Layer 3 — Bright stars: prominent, some with blue tint */
+.devcure-stars-lg {
+  background-image:
+    radial-gradient(2px 2px at 15% 30%, #fff, transparent),
+    radial-gradient(2.5px 2.5px at 35% 60%, rgba(200,220,255,1), transparent),
+    radial-gradient(2px 2px at 55% 20%, #fff, transparent),
+    radial-gradient(2.5px 2.5px at 75% 70%, rgba(190,210,255,0.95), transparent),
+    radial-gradient(2px 2px at 88% 40%, #fff, transparent),
+    radial-gradient(3px 3px at 25% 80%, rgba(200,225,255,0.9), transparent);
+  background-size: 350px 350px;
+  opacity: 1;
+  animation: devcure-star-drift 180s linear infinite, devcure-twinkle-bright 8s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* Galaxy nebula glow — background depth clusters */
+.devcure-galaxy-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 40% at 20% 35%, rgba(20, 241, 217, 0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 25% 35% at 75% 25%, rgba(124, 92, 255, 0.02) 0%, transparent 70%),
+    radial-gradient(ellipse 35% 30% at 50% 60%, rgba(59, 130, 246, 0.02) 0%, transparent 70%),
+    radial-gradient(ellipse 20% 25% at 85% 70%, rgba(124, 92, 255, 0.02) 0%, transparent 70%),
+    radial-gradient(ellipse 25% 20% at 10% 75%, rgba(20, 241, 217, 0.02) 0%, transparent 70%);
+  opacity: 1;
+  animation: devcure-nebula-pulse 12s ease-in-out infinite alternate;
+}
+
+/* =========================================================
+   COSMIC AURORA WAVES
+   Flowing bands — teal left, purple right, with hotspots.
+   ========================================================= */
+
+/* Primary teal aurora — left side */
+.devcure-glow-teal {
+  position: absolute;
+  top: 25%;
+  left: -5%;
+  width: 70%;
+  height: 350px;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 50%, rgba(20, 241, 217, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 80% at 15% 60%, rgba(20, 241, 217, 0.08) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  transform: rotate(-5deg);
+  animation: devcure-aurora-flow-left 10s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Primary purple aurora — right side */
+.devcure-glow-purple {
+  position: absolute;
+  top: 30%;
+  right: -5%;
+  width: 60%;
+  height: 300px;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 50%, rgba(124, 92, 255, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 80% at 85% 40%, rgba(124, 92, 255, 0.08) 0%, transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  transform: rotate(3deg);
+  animation: devcure-aurora-flow-right 12s ease-in-out infinite alternate;
+  animation-delay: 2s;
+  will-change: transform, opacity;
+}
+
+/* ---- Flowing Aurora Wisps (like northern lights ribbons) ---- */
+
+/* Wisp 1 — Primary teal ribbon, flows upper-left to center */
+.devcure-wisp-1 {
+  position: absolute;
+  top: 28%;
+  left: -10%;
+  width: 75%;
+  height: 60px;
+  pointer-events: none;
+  transform: rotate(-8deg);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(20, 241, 217, 0.01) 10%,
+    rgba(20, 241, 217, 0.05) 25%,
+    rgba(20, 241, 217, 0.12) 40%,
+    rgba(34, 211, 238, 0.05) 55%,
+    rgba(20, 241, 217, 0.02) 70%,
+    transparent 85%
+  );
+  filter: blur(18px);
+  animation: devcure-wisp-flow-1 10s ease-in-out infinite alternate;
+}
+
+/* Wisp 2 — Secondary teal, slightly lower and wider */
+.devcure-wisp-2 {
+  position: absolute;
+  top: 35%;
+  left: -5%;
+  width: 80%;
+  height: 40px;
+  pointer-events: none;
+  transform: rotate(-5deg);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(20, 241, 217, 0.01) 15%,
+    rgba(20, 241, 217, 0.03) 30%,
+    rgba(34, 211, 238, 0.08) 45%,
+    rgba(59, 130, 246, 0.03) 60%,
+    transparent 75%
+  );
+  filter: blur(14px);
+  animation: devcure-wisp-flow-2 12s ease-in-out infinite alternate;
+  animation-delay: 1s;
+}
+
+/* Wisp 3 — Bridge wisp: teal fading to purple across center */
+.devcure-wisp-3 {
+  position: absolute;
+  top: 40%;
+  left: 5%;
+  width: 90%;
+  height: 50px;
+  pointer-events: none;
+  transform: rotate(-3deg);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(20, 241, 217, 0.01) 10%,
+    rgba(34, 211, 238, 0.04) 25%,
+    rgba(59, 130, 246, 0.02) 40%,
+    transparent 50%,
+    rgba(59, 130, 246, 0.02) 60%,
+    rgba(124, 92, 255, 0.04) 75%,
+    rgba(124, 92, 255, 0.01) 90%,
+    transparent 100%
+  );
+  filter: blur(16px);
+  animation: devcure-wisp-flow-3 14s ease-in-out infinite alternate;
+  animation-delay: 2s;
+}
+
+/* Wisp 4 — Purple ribbon, right side */
+.devcure-wisp-4 {
+  position: absolute;
+  top: 33%;
+  right: -10%;
+  width: 70%;
+  height: 50px;
+  pointer-events: none;
+  transform: rotate(3deg);
+  background: linear-gradient(270deg,
+    transparent 0%,
+    rgba(124, 92, 255, 0.01) 10%,
+    rgba(124, 92, 255, 0.04) 25%,
+    rgba(124, 92, 255, 0.08) 42%,
+    rgba(159, 122, 255, 0.04) 58%,
+    rgba(124, 92, 255, 0.02) 72%,
+    transparent 88%
+  );
+  filter: blur(18px);
+  animation: devcure-wisp-flow-4 11s ease-in-out infinite alternate;
+  animation-delay: 0.5s;
+}
+
+/* Wisp 5 — Thin accent purple wisp, higher */
+.devcure-wisp-5 {
+  position: absolute;
+  top: 25%;
+  right: -5%;
+  width: 60%;
+  height: 30px;
+  pointer-events: none;
+  transform: rotate(5deg);
+  background: linear-gradient(270deg,
+    transparent 0%,
+    rgba(124, 92, 255, 0.02) 20%,
+    rgba(159, 122, 255, 0.05) 40%,
+    rgba(124, 92, 255, 0.02) 65%,
+    transparent 85%
+  );
+  filter: blur(12px);
+  animation: devcure-wisp-flow-5 9s ease-in-out infinite alternate;
+  animation-delay: 3s;
+}
+
+/* Bright hotspot nodes — concentrated glow where wisps cross */
+.devcure-wisp-hotspot {
+  position: absolute;
+  pointer-events: none;
+}
+
+.devcure-wisp-hotspot::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 18%;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(20, 241, 217, 0.15) 0%, transparent 70%);
+  filter: blur(25px);
+  animation: devcure-hotspot-pulse 6s ease-in-out infinite alternate;
+}
+
+.devcure-wisp-hotspot::after {
+  content: '';
+  position: absolute;
+  top: 28%;
+  right: 20%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.12) 0%, transparent 70%);
+  filter: blur(25px);
+  animation: devcure-hotspot-pulse 8s ease-in-out infinite alternate;
+  animation-delay: 2s;
+}
+
+/* =========================================================
+   NOISE / GRAIN TEXTURE OVERLAY
+   ========================================================= */
+.devcure-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* =========================================================
+   CHATBOX — SPLIT-COLOR ANIMATED ROTATING BORDER
+   Left/bottom = Teal, Right/top = Purple
+   Uses @property --border-angle for conic-gradient rotation.
+   ========================================================= */
+.devcure-chatbox {
+  background: linear-gradient(145deg, rgba(13, 20, 42, 0.94), rgba(10, 15, 30, 0.97)) !important;
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+
+  /* Animated rotating gradient border */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      #14F1D9 0deg,
+      rgba(20, 241, 217, 0.6) 45deg,
+      rgba(20, 241, 217, 0.15) 90deg,
+      rgba(124, 92, 255, 0.08) 135deg,
+      #7C5CFF 180deg,
+      rgba(124, 92, 255, 0.6) 225deg,
+      rgba(124, 92, 255, 0.15) 270deg,
+      rgba(20, 241, 217, 0.08) 315deg,
+      #14F1D9 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: devcure-border-rotate 4s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Outer glow aura */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      rgba(20, 241, 217, 0.12) 0deg,
+      transparent 90deg,
+      rgba(124, 92, 255, 0.10) 180deg,
+      transparent 270deg,
+      rgba(20, 241, 217, 0.12) 360deg
+    );
+    filter: blur(16px);
+    animation: devcure-border-rotate 4s linear infinite;
+    pointer-events: none;
+    z-index: -2;
+  }
+}
+
+/* Input wrapper */
+.devcure-input-wrapper {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px;
+
+  &:focus-within {
+    border-color: rgba(20, 241, 217, 0.2) !important;
+    box-shadow: 0 0 20px rgba(20, 241, 217, 0.05), 0 0 40px rgba(124, 92, 255, 0.03);
+  }
+}
+
+/* Send button gradient */
+.devcure-send-btn {
+  background: linear-gradient(135deg, #14F1D9, #7C5CFF) !important;
+  color: white !important;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0fd4be, #6a4de6) !important;
+    box-shadow: 0 0 20px rgba(20, 241, 217, 0.4), 0 0 40px rgba(124, 92, 255, 0.2);
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(20, 241, 217, 0.4) !important;
+  }
+}
+
+/* Active button state */
+.devcure-btn-active {
+  background: rgba(20, 241, 217, 0.12) !important;
+  color: #14F1D9 !important;
+  border-radius: 6px;
+}
+
+/* =========================================================
+   ACTION BUTTONS (Import Chat, Import Folder, Git Clone)
+   ========================================================= */
+.devcure-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: #c8d0db !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+
+  &:hover:not(:disabled) {
+    color: #14F1D9 !important;
+    background-color: rgba(20, 241, 217, 0.08) !important;
+    border-color: rgba(20, 241, 217, 0.35) !important;
+    box-shadow: 0 0 20px rgba(20, 241, 217, 0.12), 0 0 40px rgba(20, 241, 217, 0.06);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(20, 241, 217, 0.3) !important;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97) translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg, i {
+    color: rgba(20, 241, 217, 0.7) !important;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover:not(:disabled) svg,
+  &:hover:not(:disabled) i {
+    color: #14F1D9 !important;
+  }
+}
+
+/* =========================================================
+   KEYFRAME ANIMATIONS
+   ========================================================= */
+
+/* Fade in */
+.devcure-fade-in {
+  animation: devcure-fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.devcure-delay-200 {
+  animation-delay: 0.25s;
+}
+
+.devcure-delay-400 {
+  animation-delay: 0.5s;
+}
+
+@keyframes devcure-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Star falling movement */
+@keyframes devcure-star-drift {
+  from { background-position: 0 0; }
+  to { background-position: -1000px 1000px; }
+}
+
+/* Star twinkling — visible oscillation */
+@keyframes devcure-twinkle-soft {
+  0%   { opacity: 0.1; }
+  25%  { opacity: 0.8; }
+  50%  { opacity: 0.15; }
+  75%  { opacity: 0.9; }
+  100% { opacity: 0.1; }
+}
+
+@keyframes devcure-twinkle-bright {
+  0%   { opacity: 0.2; }
+  30%  { opacity: 1; }
+  60%  { opacity: 0.1; }
+  100% { opacity: 0.2; }
+}
+
+/* Aurora flow — organic wave motion */
+@keyframes devcure-aurora-flow-left {
+  0% {
+    transform: rotate(-5deg) translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(-3deg) translate(20px, -15px) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-6deg) translate(-10px, 10px) scale(1.04);
+    opacity: 0.85;
+  }
+}
+
+@keyframes devcure-aurora-flow-right {
+  0% {
+    transform: rotate(3deg) translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: rotate(5deg) translate(-15px, 10px) scale(1.06);
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(2deg) translate(10px, -8px) scale(1.02);
+    opacity: 0.75;
+  }
+}
+
+/* Wisp flow animations — each wisp moves independently */
+@keyframes devcure-wisp-flow-1 {
+  0% {
+    transform: rotate(-8deg) translate(0, 0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotate(-6deg) translate(30px, -12px);
+    opacity: 1;
+  }
+}
+
+@keyframes devcure-wisp-flow-2 {
+  0% {
+    transform: rotate(-5deg) translate(0, 0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: rotate(-3deg) translate(20px, 8px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes devcure-wisp-flow-3 {
+  0% {
+    transform: rotate(-3deg) translate(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(-1deg) translate(-15px, 5px);
+    opacity: 0.85;
+  }
+}
+
+@keyframes devcure-wisp-flow-4 {
+  0% {
+    transform: rotate(3deg) translate(0, 0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: rotate(5deg) translate(-25px, -10px);
+    opacity: 1;
+  }
+}
+
+@keyframes devcure-wisp-flow-5 {
+  0% {
+    transform: rotate(5deg) translate(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(3deg) translate(-15px, 8px);
+    opacity: 0.9;
+  }
+}
+
+/* Hotspot pulse — glow concentration nodes */
+@keyframes devcure-hotspot-pulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+}
+
+/* ROTATING BORDER — conic-gradient rotation via @property */
+@keyframes devcure-border-rotate {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* Legacy pulse */
+@keyframes devcure-pulse {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+/* Nebula glow pulse — subtle depth breathing */
+@keyframes devcure-nebula-pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* =========================================================
+   MARKDOWN CODE BLOCKS (Premium Style Override)
+   ========================================================= */
+.prose pre, pre {
+  background-color: #0b1220 !important;
+  border-radius: 10px !important;
+  padding: 12px !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  font-size: 13px !important;
+  overflow-x: auto;
+}
+
+/* =========================================================
+   WORLD CLASS CHAT MESSAGES
+   ========================================================= */
+.devcure-ai-message {
+  background: linear-gradient(135deg, rgba(0, 255, 200, 0.08), rgba(140, 100, 255, 0.08));
+  border: 1px solid rgba(0,255,200,0.2);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 0 20px rgba(0,255,200,0.15), 0 0 40px rgba(140,100,255,0.1);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.devcure-ai-message:hover {
+  border-color: rgba(0,255,200,0.4);
+  transform: translateY(-1px);
+}
+
+.devcure-user-message {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}

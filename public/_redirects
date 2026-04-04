@@ -1,0 +1,5 @@
+# Cloudflare Pages SPA Routing
+# All non-file requests should serve index.html for client-side routing
+# API routes are handled by Cloudflare Pages Functions in /functions
+
+/* /index.html 200

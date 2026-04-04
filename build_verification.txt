@@ -1,0 +1,10 @@
+
+> cortex-console@1.0.0 build
+> vite build
+
+fatal: not a git repository (or any of the parent directories): .git
+vite v5.4.11 building for production...
+transforming...
+✓ 9230 modules transformed.
+rendering chunks...
+Killed

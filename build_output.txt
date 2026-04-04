@@ -1,0 +1,9 @@
+
+> cortex-console@1.0.0 build
+> vite build
+
+vite v5.4.11 building for production...
+transforming...
+✓ 9213 modules transformed.
+rendering chunks...
+Killed
