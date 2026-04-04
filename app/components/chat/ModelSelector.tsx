@@ -44,135 +44,68 @@ export const ModelSelector = ({
         setIsModelDropdownOpen(false);
         setModelSearchQuery('');
       }
-
       if (providerDropdownRef.current && !providerDropdownRef.current.contains(event.target as Node)) {
         setIsProviderDropdownOpen(false);
         setProviderSearchQuery('');
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const filteredModels = [...modelList]
     .filter((e) => e.provider === provider?.name && e.name)
     .filter(
-      (model) =>
-        model.label.toLowerCase().includes(modelSearchQuery.toLowerCase()) ||
-        model.name.toLowerCase().includes(modelSearchQuery.toLowerCase()),
+      (m) =>
+        m.label.toLowerCase().includes(modelSearchQuery.toLowerCase()) ||
+        m.name.toLowerCase().includes(modelSearchQuery.toLowerCase()),
     );
 
   const filteredProviders = providerList.filter((p) =>
     p.name.toLowerCase().includes(providerSearchQuery.toLowerCase()),
   );
 
-  useEffect(() => {
-    setFocusedModelIndex(-1);
-  }, [modelSearchQuery, isModelDropdownOpen]);
-
-  useEffect(() => {
-    setFocusedProviderIndex(-1);
-  }, [providerSearchQuery, isProviderDropdownOpen]);
-
-  useEffect(() => {
-    if (isModelDropdownOpen && modelSearchInputRef.current) {
-      modelSearchInputRef.current.focus();
-    }
-  }, [isModelDropdownOpen]);
-
-  useEffect(() => {
-    if (isProviderDropdownOpen && providerSearchInputRef.current) {
-      providerSearchInputRef.current.focus();
-    }
-  }, [isProviderDropdownOpen]);
+  useEffect(() => { setFocusedModelIndex(-1); }, [modelSearchQuery, isModelDropdownOpen]);
+  useEffect(() => { setFocusedProviderIndex(-1); }, [providerSearchQuery, isProviderDropdownOpen]);
+  useEffect(() => { if (isModelDropdownOpen && modelSearchInputRef.current) modelSearchInputRef.current.focus(); }, [isModelDropdownOpen]);
+  useEffect(() => { if (isProviderDropdownOpen && providerSearchInputRef.current) providerSearchInputRef.current.focus(); }, [isProviderDropdownOpen]);
 
   const handleModelKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!isModelDropdownOpen) {
-      return;
-    }
-
+    if (!isModelDropdownOpen) return;
     switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setFocusedModelIndex((prev) => (prev + 1 >= filteredModels.length ? 0 : prev + 1));
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setFocusedModelIndex((prev) => (prev - 1 < 0 ? filteredModels.length - 1 : prev - 1));
-        break;
+      case 'ArrowDown': e.preventDefault(); setFocusedModelIndex((p) => (p + 1 >= filteredModels.length ? 0 : p + 1)); break;
+      case 'ArrowUp': e.preventDefault(); setFocusedModelIndex((p) => (p - 1 < 0 ? filteredModels.length - 1 : p - 1)); break;
       case 'Enter':
         e.preventDefault();
-
         if (focusedModelIndex >= 0 && focusedModelIndex < filteredModels.length) {
-          const selectedModel = filteredModels[focusedModelIndex];
-          setModel?.(selectedModel.name);
+          setModel?.(filteredModels[focusedModelIndex].name);
           setIsModelDropdownOpen(false);
           setModelSearchQuery('');
         }
-
         break;
-      case 'Escape':
-        e.preventDefault();
-        setIsModelDropdownOpen(false);
-        setModelSearchQuery('');
-        break;
-      case 'Tab':
-        if (!e.shiftKey && focusedModelIndex === filteredModels.length - 1) {
-          setIsModelDropdownOpen(false);
-        }
-
-        break;
+      case 'Escape': e.preventDefault(); setIsModelDropdownOpen(false); setModelSearchQuery(''); break;
     }
   };
 
   const handleProviderKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!isProviderDropdownOpen) {
-      return;
-    }
-
+    if (!isProviderDropdownOpen) return;
     switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setFocusedProviderIndex((prev) => (prev + 1 >= filteredProviders.length ? 0 : prev + 1));
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setFocusedProviderIndex((prev) => (prev - 1 < 0 ? filteredProviders.length - 1 : prev - 1));
-        break;
+      case 'ArrowDown': e.preventDefault(); setFocusedProviderIndex((p) => (p + 1 >= filteredProviders.length ? 0 : p + 1)); break;
+      case 'ArrowUp': e.preventDefault(); setFocusedProviderIndex((p) => (p - 1 < 0 ? filteredProviders.length - 1 : p - 1)); break;
       case 'Enter':
         e.preventDefault();
-
         if (focusedProviderIndex >= 0 && focusedProviderIndex < filteredProviders.length) {
-          const selectedProvider = filteredProviders[focusedProviderIndex];
-
+          const sel = filteredProviders[focusedProviderIndex];
           if (setProvider) {
-            setProvider(selectedProvider);
-
-            const firstModel = modelList.find((m) => m.provider === selectedProvider.name);
-
-            if (firstModel && setModel) {
-              setModel(firstModel.name);
-            }
+            setProvider(sel);
+            const first = modelList.find((m) => m.provider === sel.name);
+            if (first && setModel) setModel(first.name);
           }
-
           setIsProviderDropdownOpen(false);
           setProviderSearchQuery('');
         }
-
         break;
-      case 'Escape':
-        e.preventDefault();
-        setIsProviderDropdownOpen(false);
-        setProviderSearchQuery('');
-        break;
-      case 'Tab':
-        if (!e.shiftKey && focusedProviderIndex === filteredProviders.length - 1) {
-          setIsProviderDropdownOpen(false);
-        }
-
-        break;
+      case 'Escape': e.preventDefault(); setIsProviderDropdownOpen(false); setProviderSearchQuery(''); break;
     }
   };
 
@@ -189,282 +122,322 @@ export const ModelSelector = ({
   }, [focusedProviderIndex]);
 
   useEffect(() => {
-    if (providerList.length === 0) {
-      return;
-    }
-
+    if (providerList.length === 0) return;
     if (provider && !providerList.some((p) => p.name === provider.name)) {
-      const firstEnabledProvider = providerList[0];
-      setProvider?.(firstEnabledProvider);
-
-      const firstModel = modelList.find((m) => m.provider === firstEnabledProvider.name);
-
-      if (firstModel) {
-        setModel?.(firstModel.name);
-      }
+      const first = providerList[0];
+      setProvider?.(first);
+      const firstModel = modelList.find((m) => m.provider === first.name);
+      if (firstModel) setModel?.(firstModel.name);
     }
   }, [providerList, provider, setProvider, modelList, setModel]);
 
   if (providerList.length === 0) {
     return (
-      <div className="mb-2 p-4 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary">
-        <p className="text-center">
-          No providers are currently enabled. Please enable at least one provider in the settings to start using the
-          chat.
-        </p>
+      <div style={{ padding: '12px 16px', borderRadius: '10px', background: 'color-mix(in srgb, var(--cx-text-primary), transparent 96%)', color: 'var(--cx-text-secondary)', fontSize: '13px', textAlign: 'center' }}>
+        No providers enabled. Enable at least one provider in settings to use the chat.
       </div>
     );
   }
 
   return (
-    <div className="flex gap-2 flex-col sm:flex-row">
-      {/* Provider Combobox */}
-      <div className="relative flex w-full" onKeyDown={handleProviderKeyDown} ref={providerDropdownRef}>
-        <div
-          className={classNames(
-            'w-full p-2 rounded-lg border border-bolt-elements-borderColor',
-            'bg-bolt-elements-prompt-background text-bolt-elements-textPrimary',
-            'focus-within:outline-none focus-within:ring-2 focus-within:ring-bolt-elements-focus',
-            'transition-all cursor-pointer',
-            isProviderDropdownOpen ? 'ring-2 ring-bolt-elements-focus' : undefined,
-          )}
-          onClick={() => setIsProviderDropdownOpen(!isProviderDropdownOpen)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setIsProviderDropdownOpen(!isProviderDropdownOpen);
-            }
-          }}
+    <div style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
+      {/* ─── PROVIDER SELECTOR ─── */}
+      <div
+        ref={providerDropdownRef}
+        onKeyDown={handleProviderKeyDown}
+        style={{ position: 'relative', flex: '0 0 auto', minWidth: '120px' }}
+      >
+        <button
           role="combobox"
           aria-expanded={isProviderDropdownOpen}
-          aria-controls="provider-listbox"
           aria-haspopup="listbox"
           tabIndex={0}
+          onClick={() => setIsProviderDropdownOpen(!isProviderDropdownOpen)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '6px',
+            width: '100%',
+            background: 'color-mix(in srgb, var(--cx-text-primary), transparent 94%)',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '7px 10px',
+            cursor: 'pointer',
+            color: 'var(--cx-text-primary)',
+            fontSize: '13px',
+            fontWeight: 500,
+            letterSpacing: '-0.01em',
+            fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+            transition: 'background 0.15s ease',
+            outline: 'none',
+            whiteSpace: 'nowrap',
+          }}
         >
-          <div className="flex items-center justify-between">
-            <div className="truncate">{provider?.name || 'Select provider'}</div>
-            <Icon
-              name="caret-down"
-              className={classNames(
-                'w-4 h-4 text-bolt-elements-textSecondary opacity-75 transition-transform',
-                isProviderDropdownOpen ? 'rotate-180' : undefined,
-              )}
-            />
-          </div>
-        </div>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{provider?.name || 'Provider'}</span>
+          <Icon
+            name="caret-down"
+            className={classNames('transition-transform', isProviderDropdownOpen ? 'rotate-180' : '')}
+            style={{ flexShrink: 0, opacity: 0.5, fontSize: '12px' }}
+          />
+        </button>
 
         {isProviderDropdownOpen && (
-          <div
-            className="absolute z-20 w-full mt-1 py-1 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-background-depth-2 shadow-lg"
-            role="listbox"
-            id="provider-listbox"
+          <SelectorDropdown
+            onClose={() => { setIsProviderDropdownOpen(false); setProviderSearchQuery(''); }}
           >
-            <div className="px-2 pb-2">
-              <div className="relative">
-                <input
-                  ref={providerSearchInputRef}
-                  type="text"
-                  value={providerSearchQuery}
-                  onChange={(e) => setProviderSearchQuery(e.target.value)}
-                  placeholder="Search providers..."
-                  className={classNames(
-                    'w-full pl-2 py-1.5 rounded-md text-sm',
-                    'bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor',
-                    'text-bolt-elements-textPrimary placeholder:text-bolt-elements-textTertiary',
-                    'focus:outline-none focus:ring-2 focus:ring-bolt-elements-focus',
-                    'transition-all',
-                  )}
-                  onClick={(e) => e.stopPropagation()}
-                  role="searchbox"
-                  aria-label="Search providers"
-                />
-                <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500">
-                  <Icon name="search" size={12} />
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={classNames(
-                'max-h-60 overflow-y-auto',
-                'sm:scrollbar-none',
-                '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2',
-                '[&::-webkit-scrollbar-thumb]:bg-bolt-elements-borderColor',
-                '[&::-webkit-scrollbar-thumb]:hover:bg-bolt-elements-borderColorHover',
-                '[&::-webkit-scrollbar-thumb]:rounded-full',
-                '[&::-webkit-scrollbar-track]:bg-bolt-elements-background-depth-2',
-                '[&::-webkit-scrollbar-track]:rounded-full',
-                'sm:[&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:h-1.5',
-                'sm:hover:[&::-webkit-scrollbar-thumb]:bg-bolt-elements-borderColor/50',
-                'sm:hover:[&::-webkit-scrollbar-thumb:hover]:bg-bolt-elements-borderColor',
-                'sm:[&::-webkit-scrollbar-track]:bg-transparent',
-              )}
-            >
-              {filteredProviders.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-bolt-elements-textTertiary">No providers found</div>
-              ) : (
-                filteredProviders.map((providerOption, index) => (
+            <DropdownSearch
+              ref={providerSearchInputRef}
+              value={providerSearchQuery}
+              onChange={setProviderSearchQuery}
+              placeholder="Search providers..."
+            />
+            <DropdownList>
+              {filteredProviders.length === 0
+                ? <DropdownEmpty>No providers found</DropdownEmpty>
+                : filteredProviders.map((p, index) => (
                   <div
+                    key={p.name}
                     ref={(el) => (providerOptionsRef.current[index] = el)}
-                    key={providerOption.name}
                     role="option"
-                    aria-selected={provider?.name === providerOption.name}
-                    className={classNames(
-                      'px-3 py-2 text-sm cursor-pointer',
-                      'hover:bg-bolt-elements-background-depth-3',
-                      'text-bolt-elements-textPrimary',
-                      'outline-none',
-                      provider?.name === providerOption.name || focusedProviderIndex === index
-                        ? 'bg-bolt-elements-background-depth-2'
-                        : undefined,
-                      focusedProviderIndex === index ? 'ring-1 ring-inset ring-bolt-elements-focus' : undefined,
-                    )}
+                    aria-selected={provider?.name === p.name}
+                    tabIndex={focusedProviderIndex === index ? 0 : -1}
                     onClick={(e) => {
                       e.stopPropagation();
-
                       if (setProvider) {
-                        setProvider(providerOption);
-
-                        const firstModel = modelList.find((m) => m.provider === providerOption.name);
-
-                        if (firstModel && setModel) {
-                          setModel(firstModel.name);
-                        }
+                        setProvider(p);
+                        const first = modelList.find((m) => m.provider === p.name);
+                        if (first && setModel) setModel(first.name);
                       }
-
                       setIsProviderDropdownOpen(false);
                       setProviderSearchQuery('');
                     }}
-                    tabIndex={focusedProviderIndex === index ? 0 : -1}
+                    style={{
+                      padding: '7px 12px',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      color: 'var(--cx-text-primary)',
+                      fontWeight: provider?.name === p.name ? 500 : 400,
+                      background: (provider?.name === p.name || focusedProviderIndex === index)
+                        ? 'color-mix(in srgb, var(--cx-accent-vivid), transparent 92%)'
+                        : 'transparent',
+                      borderRadius: '6px',
+                      margin: '0 4px',
+                      transition: 'background 0.1s ease',
+                      letterSpacing: '-0.01em',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (provider?.name !== p.name && focusedProviderIndex !== index) {
+                        (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--cx-text-primary), transparent 94%)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (provider?.name !== p.name && focusedProviderIndex !== index) {
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                      }
+                    }}
                   >
-                    {providerOption.name}
+                    {p.name}
                   </div>
-                ))
-              )}
-            </div>
-          </div>
+                ))}
+            </DropdownList>
+          </SelectorDropdown>
         )}
       </div>
 
-      {/* Model Combobox */}
-      <div className="relative flex w-full min-w-[50%]" onKeyDown={handleModelKeyDown} ref={modelDropdownRef}>
-        <div
-          className={classNames(
-            'w-full p-2 rounded-lg border border-white/10 shadow-sm',
-            'bg-[#0a0a0a] text-slate-200',
-            'focus-within:outline-none focus-within:ring-2 focus-within:ring-white/20',
-            'transition-all cursor-pointer',
-            isModelDropdownOpen ? 'ring-2 ring-white/20' : undefined,
-          )}
-          onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setIsModelDropdownOpen(!isModelDropdownOpen);
-            }
-          }}
+      {/* ─── MODEL SELECTOR ─── */}
+      <div
+        ref={modelDropdownRef}
+        onKeyDown={handleModelKeyDown}
+        style={{ position: 'relative', flex: 1, minWidth: 0 }}
+      >
+        <button
           role="combobox"
           aria-expanded={isModelDropdownOpen}
-          aria-controls="model-listbox"
           aria-haspopup="listbox"
           tabIndex={0}
+          onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '6px',
+            width: '100%',
+            background: 'color-mix(in srgb, var(--cx-text-primary), transparent 94%)',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '7px 10px',
+            cursor: 'pointer',
+            color: 'var(--cx-text-primary)',
+            fontSize: '13px',
+            fontWeight: 500,
+            letterSpacing: '-0.01em',
+            fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+            transition: 'background 0.15s ease',
+            outline: 'none',
+          }}
         >
-          <div className="flex items-center justify-between">
-            <div className="truncate">{modelList.find((m) => m.name === model)?.label || 'Select model'}</div>
-            <Icon
-              name="caret-down"
-              className={classNames(
-                'w-4 h-4 text-bolt-elements-textSecondary opacity-75 transition-transform',
-                isModelDropdownOpen ? 'rotate-180' : undefined,
-              )}
-            />
-          </div>
-        </div>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+            {modelList.find((m) => m.name === model)?.label || 'Select model'}
+          </span>
+          <Icon
+            name="caret-down"
+            className={classNames('transition-transform', isModelDropdownOpen ? 'rotate-180' : '')}
+            style={{ flexShrink: 0, opacity: 0.5, fontSize: '12px' }}
+          />
+        </button>
 
         {isModelDropdownOpen && (
-          <div
-            className="absolute z-10 w-full mt-1 py-1 rounded-lg border border-white/10 bg-[#0a0a0a] shadow-lg overflow-hidden"
-            role="listbox"
-            id="model-listbox"
+          <SelectorDropdown
+            onClose={() => { setIsModelDropdownOpen(false); setModelSearchQuery(''); }}
           >
-            <div className="px-2 pb-2">
-              <div className="relative">
-                <input
-                  ref={modelSearchInputRef}
-                  type="text"
-                  value={modelSearchQuery}
-                  onChange={(e) => setModelSearchQuery(e.target.value)}
-                  placeholder="Search models..."
-                  className={classNames(
-                    'w-full pl-2 py-1.5 rounded-md text-sm',
-                    'bg-white/5 border border-white/10',
-                    'text-slate-200 placeholder:text-slate-500',
-                    'focus:outline-none focus:ring-2 focus:ring-white/20',
-                    'transition-all',
-                  )}
-                  onClick={(e) => e.stopPropagation()}
-                  role="searchbox"
-                  aria-label="Search models"
-                />
-                <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500">
-                  <Icon name="search" size={12} />
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={classNames(
-                'max-h-60 overflow-y-auto',
-                'sm:scrollbar-none',
-                '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2',
-                '[&::-webkit-scrollbar-thumb]:bg-bolt-elements-borderColor',
-                '[&::-webkit-scrollbar-thumb]:hover:bg-bolt-elements-borderColorHover',
-                '[&::-webkit-scrollbar-thumb]:rounded-full',
-                '[&::-webkit-scrollbar-track]:bg-bolt-elements-background-depth-2',
-                '[&::-webkit-scrollbar-track]:rounded-full',
-                'sm:[&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:h-1.5',
-                'sm:hover:[&::-webkit-scrollbar-thumb]:bg-bolt-elements-borderColor/50',
-                'sm:hover:[&::-webkit-scrollbar-thumb:hover]:bg-bolt-elements-borderColor',
-                'sm:[&::-webkit-scrollbar-track]:bg-transparent',
-              )}
-            >
-              {modelLoading === 'all' || modelLoading === provider?.name ? (
-                <div className="px-3 py-2 text-sm text-bolt-elements-textTertiary">Loading...</div>
-              ) : filteredModels.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-bolt-elements-textTertiary">No models found</div>
-              ) : (
-                filteredModels.map((modelOption, index) => (
-                  <div
-                    ref={(el) => (modelOptionsRef.current[index] = el)}
-                    key={index} // Consider using modelOption.name if unique
-                    role="option"
-                    aria-selected={model === modelOption.name}
-                    className={classNames(
-                      'px-3 py-2 text-sm cursor-pointer',
-                      'hover:bg-bolt-elements-background-depth-3',
-                      'text-bolt-elements-textPrimary',
-                      'outline-none',
-                      model === modelOption.name || focusedModelIndex === index
-                        ? 'bg-bolt-elements-background-depth-2'
-                        : undefined,
-                      focusedModelIndex === index ? 'ring-1 ring-inset ring-bolt-elements-focus' : undefined,
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setModel?.(modelOption.name);
-                      setIsModelDropdownOpen(false);
-                      setModelSearchQuery('');
-                    }}
-                    tabIndex={focusedModelIndex === index ? 0 : -1}
-                  >
-                    {modelOption.label}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+            <DropdownSearch
+              ref={modelSearchInputRef}
+              value={modelSearchQuery}
+              onChange={setModelSearchQuery}
+              placeholder="Search models..."
+            />
+            <DropdownList>
+              {modelLoading === 'all' || modelLoading === provider?.name
+                ? <DropdownEmpty>Loading models...</DropdownEmpty>
+                : filteredModels.length === 0
+                  ? <DropdownEmpty>No models found</DropdownEmpty>
+                  : filteredModels.map((m, index) => (
+                    <div
+                      key={index}
+                      ref={(el) => (modelOptionsRef.current[index] = el)}
+                      role="option"
+                      aria-selected={model === m.name}
+                      tabIndex={focusedModelIndex === index ? 0 : -1}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setModel?.(m.name);
+                        setIsModelDropdownOpen(false);
+                        setModelSearchQuery('');
+                      }}
+                      style={{
+                        padding: '7px 12px',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        color: 'var(--cx-text-primary)',
+                        fontWeight: model === m.name ? 500 : 400,
+                        background: (model === m.name || focusedModelIndex === index)
+                          ? 'color-mix(in srgb, var(--cx-accent-vivid), transparent 92%)'
+                          : 'transparent',
+                        borderRadius: '6px',
+                        margin: '0 4px',
+                        transition: 'background 0.1s ease',
+                        letterSpacing: '-0.01em',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (model !== m.name && focusedModelIndex !== index) {
+                          (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--cx-text-primary), transparent 94%)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (model !== m.name && focusedModelIndex !== index) {
+                          (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      {m.label}
+                    </div>
+                  ))}
+            </DropdownList>
+          </SelectorDropdown>
         )}
       </div>
     </div>
   );
 };
+
+function SelectorDropdown({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 'calc(100% + 6px)',
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: 'var(--cx-surface)',
+        borderRadius: '14px',
+        boxShadow: [
+          '0 0 0 1px color-mix(in srgb, var(--cx-text-primary), transparent 90%)',
+          '0 12px 40px -8px rgba(0,0,0,0.28)',
+          '0 4px 12px rgba(0,0,0,0.12)',
+        ].join(', '),
+        backdropFilter: 'blur(24px) saturate(1.5)',
+        WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
+        overflow: 'hidden',
+        animation: 'selector-in 0.18s cubic-bezier(0.4,0,0.2,1)',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+import { forwardRef } from 'react';
+
+const DropdownSearch = forwardRef<HTMLInputElement, { value: string; onChange: (v: string) => void; placeholder: string }>(
+  ({ value, onChange, placeholder }, ref) => (
+    <div style={{ padding: '10px 10px 6px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          background: 'color-mix(in srgb, var(--cx-text-primary), transparent 94%)',
+          borderRadius: '8px',
+          padding: '6px 10px',
+        }}
+      >
+        <Icon name="search" style={{ color: 'var(--cx-text-muted)', fontSize: '12px', flexShrink: 0 }} />
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            fontSize: '12px',
+            color: 'var(--cx-text-primary)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+          }}
+        />
+      </div>
+    </div>
+  ),
+);
+
+function DropdownList({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        maxHeight: '200px',
+        overflowY: 'auto',
+        padding: '4px 0 8px',
+        scrollbarWidth: 'thin',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function DropdownEmpty({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ padding: '10px 14px', fontSize: '12px', color: 'var(--cx-text-muted)', textAlign: 'center' }}>
+      {children}
+    </div>
+  );
+}
