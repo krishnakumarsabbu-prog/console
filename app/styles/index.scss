@@ -14,14 +14,11 @@
    ============================================================ */
 
 :root {
-  --cx-bg: #080c14;
-  --cx-surface: #0c1120;
-  --cx-sky: #38bdf8;
-  --cx-sky-dim: rgba(56, 189, 248, 0.6);
-
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --gradient-opacity: 1;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html,
@@ -35,21 +32,21 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--cx-bg);
-  color: var(--bolt-elements-textPrimary);
+  color: var(--cx-text-primary);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
+/* color-scheme follows the theme */
 html {
   color-scheme: dark;
 }
-
-html[data-theme='light'] {
+html[data-theme='ivory'] {
   color-scheme: light;
 }
 
 #root {
   height: 100%;
-  background-color: var(--bolt-elements-bg-depth-1);
+  background-color: var(--cx-bg);
 }
 
 input,
@@ -58,7 +55,7 @@ select,
 button {
   background-color: transparent !important;
   color: inherit !important;
-  border-color: var(--bolt-elements-borderColor);
+  border-color: var(--cx-border);
 
   &:focus {
     outline: none;
@@ -72,7 +69,7 @@ canvas.xterm-link-layer,
 canvas.xterm-cursor-layer,
 canvas.xterm-text-layer,
 canvas.xterm-selection-layer {
-  background-color: var(--bolt-elements-bg-depth-1) !important;
+  background-color: var(--cx-bg) !important;
 }
 
 /* ============================================================
@@ -82,7 +79,7 @@ canvas.xterm-selection-layer {
 .modern-scrollbar {
   overflow: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--modern-scrollbar-thumb-background, rgba(255, 255, 255, 0.08)) transparent;
+  scrollbar-color: var(--modern-scrollbar-thumb-background, rgba(128, 128, 128, 0.15)) transparent;
 
   &::-webkit-scrollbar {
     width: 4px;
@@ -94,57 +91,27 @@ canvas.xterm-selection-layer {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--modern-scrollbar-thumb-background, rgba(255, 255, 255, 0.08));
+    background-color: var(--modern-scrollbar-thumb-background, rgba(128, 128, 128, 0.15));
     border-radius: 9999px;
     transition: background-color 0.2s ease;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--modern-scrollbar-thumb-backgroundHover, rgba(255, 255, 255, 0.15));
-  }
-}
-
-[data-theme='monokai'] {
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--bolt-elements-scrollbar-thumb) var(--bolt-elements-scrollbar-track);
-  }
-
-  *::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: var(--bolt-elements-scrollbar-track);
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: var(--bolt-elements-scrollbar-thumb);
-    border-radius: 9999px;
-  }
-
-  *::-webkit-scrollbar-thumb:hover {
-    background-color: var(--bolt-elements-scrollbar-thumb-hover);
+    background-color: var(--modern-scrollbar-thumb-backgroundHover, rgba(128, 128, 128, 0.28));
   }
 }
 
 .modern-scrollbar-invert {
   &::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 70%);
+    background-color: color-mix(in srgb, var(--cx-text-primary), transparent 70%);
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 50%);
+    background-color: color-mix(in srgb, var(--cx-text-primary), transparent 50%);
   }
 
-  scrollbar-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 50%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--cx-text-primary), transparent 50%) transparent;
 }
-
-/* ============================================================
-   CORTEX CONSOLE DESIGN SYSTEM — PREMIUM GRADE
-   Crafted. Cinematic. Unforgettable.
-   ============================================================ */
 
 /* Enable @property animation for rotating border */
 @property --cx-border-angle {
@@ -153,33 +120,35 @@ canvas.xterm-selection-layer {
   inherits: false;
 }
 
-/* ---- Display text gradient ---- */
+/* ============================================================
+   DISPLAY TEXT GRADIENTS — theme-driven
+   ============================================================ */
+
 .cx-gradient-text {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 55%, #c084fc 100%);
+  background: linear-gradient(135deg, var(--cx-accent-vivid) 0%, var(--cx-accent-secondary, var(--cx-accent-vivid)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .cx-gradient-text-gold {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  background: linear-gradient(135deg, var(--cx-accent-vivid) 0%, var(--cx-accent-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .cx-gradient-text-hero {
-  background: linear-gradient(140deg, #f8fafc 0%, #cbd5e1 40%, #38bdf8 100%);
+  background: linear-gradient(140deg, var(--cx-text-primary) 0%, var(--cx-text-secondary) 45%, var(--cx-accent-vivid) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 /* ============================================================
-   AMBIENT BACKGROUND — IMMERSIVE DEEP SPACE
+   AMBIENT BACKGROUND — IMMERSIVE, THEME-DRIVEN
    ============================================================ */
 
-/* Mesh gradient ambient light */
 .cx-ambient {
   position: absolute;
   inset: 0;
@@ -187,7 +156,6 @@ canvas.xterm-selection-layer {
   overflow: hidden;
 }
 
-/* Primary ambient orb — left warm glow */
 .cx-ambient-orb-1 {
   position: absolute;
   top: -10%;
@@ -199,16 +167,14 @@ canvas.xterm-selection-layer {
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
-    rgba(14, 165, 233, 0.06) 0%,
-    rgba(56, 189, 248, 0.03) 40%,
-    transparent 70%
+    var(--cx-orb1-color) 0%,
+    transparent 65%
   );
   filter: blur(60px);
   animation: cx-orb-drift-1 20s ease-in-out infinite alternate;
   will-change: transform, opacity;
 }
 
-/* Secondary ambient orb — right tonal accent */
 .cx-ambient-orb-2 {
   position: absolute;
   top: 20%;
@@ -220,9 +186,8 @@ canvas.xterm-selection-layer {
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
-    rgba(99, 102, 241, 0.05) 0%,
-    rgba(139, 92, 246, 0.025) 40%,
-    transparent 70%
+    var(--cx-orb2-color) 0%,
+    transparent 65%
   );
   filter: blur(80px);
   animation: cx-orb-drift-2 25s ease-in-out infinite alternate;
@@ -230,7 +195,6 @@ canvas.xterm-selection-layer {
   will-change: transform, opacity;
 }
 
-/* Fine grain noise texture — cinematic surface */
 .cx-noise {
   position: absolute;
   inset: 0;
@@ -241,19 +205,17 @@ canvas.xterm-selection-layer {
   background-size: 256px 256px;
 }
 
-/* Subtle grid overlay — precision signal */
 .cx-grid {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--cx-text-primary), transparent 98%) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--cx-text-primary), transparent 98%) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 80%);
 }
 
-/* Horizon light — cinematic depth line */
 .cx-horizon {
   position: absolute;
   bottom: 40%;
@@ -263,9 +225,9 @@ canvas.xterm-selection-layer {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(56, 189, 248, 0.08) 20%,
-    rgba(56, 189, 248, 0.15) 50%,
-    rgba(56, 189, 248, 0.08) 80%,
+    var(--cx-horizon-color) 20%,
+    color-mix(in srgb, var(--cx-accent-vivid), transparent 70%) 50%,
+    var(--cx-horizon-color) 80%,
     transparent 100%
   );
   pointer-events: none;
@@ -277,13 +239,13 @@ canvas.xterm-selection-layer {
    ============================================================ */
 
 .cx-composer {
-  background: rgba(12, 17, 32, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: var(--cx-composer-bg) !important;
+  border: 1px solid var(--cx-border) !important;
   border-radius: 18px;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    0 16px 48px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 color-mix(in srgb, var(--cx-text-primary), transparent 95%);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   position: relative;
@@ -292,47 +254,45 @@ canvas.xterm-selection-layer {
   transition: border-color 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
 
   &:focus-within {
-    border-color: rgba(56, 189, 248, 0.2) !important;
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 70%) !important;
     box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.3),
-      0 16px 48px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(56, 189, 248, 0.08),
-      0 0 40px rgba(14, 165, 233, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      0 16px 48px rgba(0, 0, 0, 0.3),
+      0 0 0 1px var(--cx-composer-glow),
+      0 0 40px var(--cx-accent-glow),
+      inset 0 1px 0 color-mix(in srgb, var(--cx-text-primary), transparent 93%);
   }
 }
 
-/* Textarea within composer */
 .cx-composer textarea {
   background: transparent !important;
   resize: none;
-  caret-color: #38bdf8;
+  caret-color: var(--cx-accent-vivid);
   font-size: 14px;
   line-height: 1.65;
   letter-spacing: -0.01em;
-  color: #e2e8f0 !important;
+  color: var(--cx-text-primary) !important;
 
   &::placeholder {
-    color: #475569 !important;
+    color: var(--cx-text-muted) !important;
     opacity: 1;
   }
 }
 
-/* Input wrapper within composer */
 .cx-input-field {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: color-mix(in srgb, var(--cx-text-primary), transparent 97%) !important;
+  border: 1px solid var(--cx-border) !important;
   border-radius: 12px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus-within {
-    border-color: rgba(56, 189, 248, 0.18) !important;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.05);
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 65%) !important;
+    box-shadow: 0 0 0 3px var(--cx-accent-glow);
   }
 }
 
 /* ============================================================
-   ACTION BUTTONS — REFINED GHOST STYLE
+   ACTION BUTTONS — THEME-AWARE GHOST STYLE
    ============================================================ */
 
 .cx-action-btn {
@@ -345,9 +305,9 @@ canvas.xterm-selection-layer {
   font-weight: 500;
   font-family: var(--font-sans);
   letter-spacing: -0.01em;
-  color: #94a3b8 !important;
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--cx-text-secondary) !important;
+  background-color: color-mix(in srgb, var(--cx-text-primary), transparent 96%) !important;
+  border: 1px solid var(--cx-border) !important;
   border-radius: 9999px;
   cursor: pointer;
   white-space: nowrap;
@@ -355,9 +315,9 @@ canvas.xterm-selection-layer {
   backdrop-filter: blur(8px);
 
   &:hover:not(:disabled) {
-    color: #e2e8f0 !important;
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: var(--cx-text-primary) !important;
+    background-color: color-mix(in srgb, var(--cx-text-primary), transparent 92%) !important;
+    border-color: color-mix(in srgb, var(--cx-text-primary), transparent 82%) !important;
     transform: translateY(-1px);
   }
 
@@ -371,8 +331,7 @@ canvas.xterm-selection-layer {
     cursor: not-allowed;
   }
 
-  svg,
-  i {
+  svg, i {
     opacity: 0.7;
     transition: opacity 0.2s ease;
   }
@@ -383,17 +342,16 @@ canvas.xterm-selection-layer {
   }
 }
 
-/* Primary send button */
 .cx-send-btn {
-  background: linear-gradient(135deg, #0ea5e9, #6366f1) !important;
+  background: linear-gradient(135deg, var(--cx-accent-primary), var(--cx-accent-vivid)) !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 2px 12px var(--cx-accent-glow);
   transition: all 0.2s var(--ease-smooth);
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #38bdf8, #818cf8) !important;
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.35), 0 2px 8px rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, var(--cx-accent-vivid), var(--cx-accent-primary)) !important;
+    box-shadow: 0 4px 20px var(--cx-accent-glow-strong);
     transform: translateY(-1px);
   }
 
@@ -402,42 +360,41 @@ canvas.xterm-selection-layer {
   }
 }
 
-/* Active state for icon buttons */
 .cx-btn-active {
-  background: rgba(56, 189, 248, 0.1) !important;
-  color: #38bdf8 !important;
-  border-color: rgba(56, 189, 248, 0.2) !important;
+  background: var(--cx-accent-glow) !important;
+  color: var(--cx-accent-vivid) !important;
+  border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 70%) !important;
   border-radius: 7px;
 }
 
 /* ============================================================
-   AI MESSAGE SYSTEM — PREMIUM RESPONSE CONTAINERS
+   AI MESSAGE SYSTEM — THEME-AWARE CONTAINERS
    ============================================================ */
 
 .cx-ai-message {
-  background: rgba(12, 17, 32, 0.7);
-  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: var(--cx-surface);
+  border: 1px solid var(--cx-border);
   border-radius: 14px;
   backdrop-filter: blur(12px);
   transition: border-color 0.2s ease;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 color-mix(in srgb, var(--cx-text-primary), transparent 96%);
   width: 100%;
 
   &:hover {
-    border-color: rgba(56, 189, 248, 0.18);
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 72%);
   }
 }
 
 .cx-user-message {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--cx-text-primary), transparent 96%);
+  border: 1px solid var(--cx-border);
   border-radius: 12px;
   transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: color-mix(in srgb, var(--cx-text-primary), transparent 85%);
   }
 }
 
@@ -447,14 +404,14 @@ canvas.xterm-selection-layer {
 
 .prose pre,
 pre {
-  background-color: rgba(8, 12, 20, 0.95) !important;
+  background-color: var(--cx-surface) !important;
   border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--cx-border) !important;
   font-size: 13px !important;
   font-family: var(--font-mono) !important;
   line-height: 1.65 !important;
   overflow-x: auto;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ============================================================
@@ -462,11 +419,11 @@ pre {
    ============================================================ */
 
 .cx-header {
-  background: rgba(8, 12, 20, 0.92);
+  background: color-mix(in srgb, var(--cx-bg), transparent 8%);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--cx-border);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--cx-text-primary), transparent 96%);
 }
 
 .cx-logo-mark {
@@ -486,52 +443,52 @@ pre {
    ============================================================ */
 
 .cx-sidebar {
-  background: rgba(8, 12, 20, 0.96);
+  background: color-mix(in srgb, var(--cx-bg), transparent 4%);
   backdrop-filter: blur(32px);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid var(--cx-border);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.2);
 }
 
 .cx-sidebar-header {
-  background: rgba(12, 17, 32, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--cx-surface);
+  border-bottom: 1px solid var(--cx-border);
 }
 
 .cx-sidebar-item {
   border-radius: 8px;
   padding: 7px 10px;
   transition: background-color 0.15s ease, color 0.15s ease;
-  color: #64748b;
+  color: var(--cx-text-muted);
   cursor: pointer;
   font-size: 13px;
   line-height: 1.4;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.04);
-    color: #e2e8f0;
+    background-color: var(--cx-hover);
+    color: var(--cx-text-primary);
   }
 
   &.active {
-    background-color: rgba(56, 189, 248, 0.08);
-    color: #38bdf8;
+    background-color: var(--cx-accent-glow);
+    color: var(--cx-accent-vivid);
   }
 }
 
 .cx-search-input {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: color-mix(in srgb, var(--cx-text-primary), transparent 97%) !important;
+  border: 1px solid var(--cx-border) !important;
   border-radius: 9px;
   font-size: 13px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  color: #e2e8f0 !important;
+  color: var(--cx-text-primary) !important;
 
   &::placeholder {
-    color: #475569 !important;
+    color: var(--cx-text-muted) !important;
   }
 
   &:focus {
-    border-color: rgba(56, 189, 248, 0.25) !important;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.06) !important;
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 55%) !important;
+    box-shadow: 0 0 0 3px var(--cx-accent-glow) !important;
     outline: none !important;
   }
 }
@@ -550,14 +507,14 @@ pre {
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.15);
+  background: var(--cx-accent-glow);
+  border: 1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 72%);
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #38bdf8;
+  color: var(--cx-accent-vivid);
   margin-bottom: 24px;
 
   &::before {
@@ -565,8 +522,8 @@ pre {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #38bdf8;
-    box-shadow: 0 0 8px #38bdf8;
+    background: var(--cx-accent-vivid);
+    box-shadow: 0 0 8px var(--cx-accent-vivid);
     animation: cx-pulse-dot 2s ease-in-out infinite;
   }
 }
@@ -580,20 +537,20 @@ pre {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--cx-text-primary), transparent 96%);
+  border: 1px solid var(--cx-border);
   border-radius: 9999px;
   font-size: 12.5px;
   font-weight: 450;
-  color: #64748b;
+  color: var(--cx-text-secondary);
   cursor: pointer;
   transition: all 0.2s var(--ease-smooth);
   letter-spacing: -0.01em;
 
   &:hover {
-    background: rgba(56, 189, 248, 0.07);
-    border-color: rgba(56, 189, 248, 0.2);
-    color: #94a3b8;
+    background: var(--cx-accent-glow);
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 65%);
+    color: var(--cx-text-primary);
     transform: translateY(-1px);
   }
 
@@ -624,21 +581,21 @@ pre {
    ============================================================ */
 
 .cx-workbench {
-  background: rgba(8, 12, 20, 0.97);
+  background: var(--cx-bg);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--cx-border);
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--cx-shadow-panel);
 }
 
 .cx-workbench-header {
-  background: rgba(12, 17, 32, 0.9);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--cx-surface);
+  border-bottom: 1px solid var(--cx-border);
   padding: 0 16px;
 }
 
 /* ============================================================
-   RESIZE HANDLE — SUBTLE
+   RESIZE HANDLE
    ============================================================ */
 
 .cx-resize-handle {
@@ -649,11 +606,11 @@ pre {
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(56, 189, 248, 0.3);
+    background: color-mix(in srgb, var(--cx-accent-vivid), transparent 60%);
   }
 
   &:active {
-    background: rgba(56, 189, 248, 0.5);
+    background: color-mix(in srgb, var(--cx-accent-vivid), transparent 40%);
   }
 }
 
@@ -666,22 +623,22 @@ pre {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: rgba(12, 17, 32, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--cx-surface);
+  border: 1px solid var(--cx-border);
   border-radius: 9999px;
-  color: #94a3b8;
+  color: var(--cx-text-secondary);
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
   cursor: pointer;
   backdrop-filter: blur(16px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(17, 24, 39, 0.98);
-    border-color: rgba(56, 189, 248, 0.2);
-    color: #e2e8f0;
+    background: var(--cx-surface-raised);
+    border-color: color-mix(in srgb, var(--cx-accent-vivid), transparent 65%);
+    color: var(--cx-text-primary);
   }
 }
 
@@ -697,16 +654,15 @@ pre {
 .cx-skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.07) 50%,
-    rgba(255, 255, 255, 0.03) 75%
+    color-mix(in srgb, var(--cx-text-primary), transparent 96%) 25%,
+    color-mix(in srgb, var(--cx-text-primary), transparent 90%) 50%,
+    color-mix(in srgb, var(--cx-text-primary), transparent 96%) 75%
   );
   background-size: 200% 100%;
   animation: cx-shimmer 1.8s ease-in-out infinite;
   border-radius: 8px;
 }
 
-/* AI thinking indicator */
 .cx-thinking {
   display: flex;
   align-items: center;
@@ -716,7 +672,7 @@ pre {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #38bdf8;
+    background: var(--cx-accent-vivid);
     opacity: 0.4;
     animation: cx-thinking-dot 1.4s ease-in-out infinite;
 
@@ -741,9 +697,9 @@ pre {
 }
 
 .cx-badge-sky {
-  background: rgba(14, 165, 233, 0.1);
-  border: 1px solid rgba(14, 165, 233, 0.2);
-  color: #38bdf8;
+  background: var(--cx-accent-glow);
+  border: 1px solid color-mix(in srgb, var(--cx-accent-vivid), transparent 65%);
+  color: var(--cx-accent-vivid);
 }
 
 .cx-badge-emerald {
@@ -762,7 +718,6 @@ pre {
    KEYFRAME ANIMATIONS
    ============================================================ */
 
-/* Ambient orb drift */
 @keyframes cx-orb-drift-1 {
   0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
   50% { transform: translate(5%, 3%) scale(1.05); opacity: 1; }
@@ -775,7 +730,6 @@ pre {
   100% { transform: translate(3%, 4%) scale(0.98); opacity: 0.75; }
 }
 
-/* Entrance animations */
 @keyframes cx-fade-up {
   from {
     opacity: 0;
@@ -803,44 +757,38 @@ pre {
   }
 }
 
-/* Pulse dot for status indicator */
 @keyframes cx-pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.6; transform: scale(0.8); }
 }
 
-/* Thinking dots */
 @keyframes cx-thinking-dot {
   0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
   40% { opacity: 1; transform: scale(1.3); }
 }
 
-/* Shimmer sweep */
 @keyframes cx-sweep {
   from { background-position: -200% 0; }
   to { background-position: 200% 0; }
 }
 
-/* Rotating border animation */
 @keyframes cx-border-spin {
   to { --cx-border-angle: 360deg; }
 }
 
-/* Entrance delay utilities */
 .cx-anim-delay-100 { animation-delay: 0.1s; }
 .cx-anim-delay-200 { animation-delay: 0.2s; }
 .cx-anim-delay-300 { animation-delay: 0.3s; }
 .cx-anim-delay-400 { animation-delay: 0.4s; }
 .cx-anim-delay-500 { animation-delay: 0.5s; }
 
-/* Entrance utility class */
 .cx-entrance {
   animation: cx-fade-up 0.55s cubic-bezier(0.25, 1, 0.5, 1) both;
   opacity: 0;
 }
 
 /* ============================================================
-   LEGACY COMPATIBILITY — keep devcure classes working
+   LEGACY COMPATIBILITY
    ============================================================ */
 
 .devcure-gradient-text {
@@ -884,16 +832,11 @@ pre {
   opacity: 0;
 }
 
-.devcure-delay-200 {
-  animation-delay: 0.2s;
-}
-
-.devcure-delay-400 {
-  animation-delay: 0.4s;
-}
+.devcure-delay-200 { animation-delay: 0.2s; }
+.devcure-delay-400 { animation-delay: 0.4s; }
 
 /* ============================================================
-   STARS BACKGROUND — retained for compatibility
+   STARS BACKGROUND
    ============================================================ */
 
 .devcure-stars {
@@ -905,16 +848,16 @@ pre {
 
 .devcure-stars-sm {
   background-image:
-    radial-gradient(1px 1px at 7% 11%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 17% 28%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 29% 52%, rgba(255,255,255,0.35), transparent),
-    radial-gradient(1px 1px at 43% 19%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 53% 71%, rgba(255,255,255,0.25), transparent),
-    radial-gradient(1px 1px at 61% 36%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 71% 84%, rgba(255,255,255,0.2), transparent),
-    radial-gradient(1px 1px at 83% 15%, rgba(255,255,255,0.35), transparent),
-    radial-gradient(1px 1px at 91% 63%, rgba(255,255,255,0.25), transparent),
-    radial-gradient(1px 1px at 38% 89%, rgba(255,255,255,0.3), transparent);
+    radial-gradient(1px 1px at 7% 11%, color-mix(in srgb, var(--cx-text-primary), transparent 60%), transparent),
+    radial-gradient(1px 1px at 17% 28%, color-mix(in srgb, var(--cx-text-primary), transparent 68%), transparent),
+    radial-gradient(1px 1px at 29% 52%, color-mix(in srgb, var(--cx-text-primary), transparent 64%), transparent),
+    radial-gradient(1px 1px at 43% 19%, color-mix(in srgb, var(--cx-text-primary), transparent 60%), transparent),
+    radial-gradient(1px 1px at 53% 71%, color-mix(in srgb, var(--cx-text-primary), transparent 73%), transparent),
+    radial-gradient(1px 1px at 61% 36%, color-mix(in srgb, var(--cx-text-primary), transparent 68%), transparent),
+    radial-gradient(1px 1px at 71% 84%, color-mix(in srgb, var(--cx-text-primary), transparent 78%), transparent),
+    radial-gradient(1px 1px at 83% 15%, color-mix(in srgb, var(--cx-text-primary), transparent 64%), transparent),
+    radial-gradient(1px 1px at 91% 63%, color-mix(in srgb, var(--cx-text-primary), transparent 73%), transparent),
+    radial-gradient(1px 1px at 38% 89%, color-mix(in srgb, var(--cx-text-primary), transparent 68%), transparent);
   background-size: 200px 200px;
   opacity: 0.6;
   animation: cx-star-drift 120s linear infinite;
@@ -922,11 +865,11 @@ pre {
 
 .devcure-stars-md {
   background-image:
-    radial-gradient(1.5px 1.5px at 11% 25%, rgba(220,235,255,0.5), transparent),
-    radial-gradient(1.5px 1.5px at 31% 65%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1.5px 1.5px at 51% 15%, rgba(200,220,255,0.45), transparent),
-    radial-gradient(1.5px 1.5px at 67% 45%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1.5px 1.5px at 83% 75%, rgba(210,225,255,0.35), transparent);
+    radial-gradient(1.5px 1.5px at 11% 25%, color-mix(in srgb, var(--cx-text-primary), transparent 52%), transparent),
+    radial-gradient(1.5px 1.5px at 31% 65%, color-mix(in srgb, var(--cx-text-primary), transparent 60%), transparent),
+    radial-gradient(1.5px 1.5px at 51% 15%, color-mix(in srgb, var(--cx-text-primary), transparent 55%), transparent),
+    radial-gradient(1.5px 1.5px at 67% 45%, color-mix(in srgb, var(--cx-text-primary), transparent 60%), transparent),
+    radial-gradient(1.5px 1.5px at 83% 75%, color-mix(in srgb, var(--cx-text-primary), transparent 65%), transparent);
   background-size: 300px 300px;
   opacity: 0.5;
   animation: cx-star-drift 180s linear infinite;
@@ -935,10 +878,10 @@ pre {
 
 .devcure-stars-lg {
   background-image:
-    radial-gradient(2px 2px at 18% 35%, rgba(255,255,255,0.45), transparent),
-    radial-gradient(2.5px 2.5px at 42% 65%, rgba(200,220,255,0.5), transparent),
-    radial-gradient(2px 2px at 68% 22%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(2.5px 2.5px at 82% 78%, rgba(190,210,255,0.45), transparent);
+    radial-gradient(2px 2px at 18% 35%, color-mix(in srgb, var(--cx-text-primary), transparent 55%), transparent),
+    radial-gradient(2.5px 2.5px at 42% 65%, color-mix(in srgb, var(--cx-text-primary), transparent 50%), transparent),
+    radial-gradient(2px 2px at 68% 22%, color-mix(in srgb, var(--cx-text-primary), transparent 60%), transparent),
+    radial-gradient(2.5px 2.5px at 82% 78%, color-mix(in srgb, var(--cx-text-primary), transparent 55%), transparent);
   background-size: 450px 450px;
   opacity: 0.6;
   animation: cx-star-drift 220s linear infinite;

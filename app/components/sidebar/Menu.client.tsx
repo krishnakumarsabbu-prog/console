@@ -59,14 +59,14 @@ function CurrentDateTime() {
   return (
     <div
       className="flex items-center justify-between px-4 py-2.5"
-      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
+      style={{ borderBottom: '1px solid var(--cx-border)' }}
     >
-      <span className="text-[11px] font-medium tracking-wide" style={{ color: '#475569' }}>
+      <span className="text-[11px] font-medium tracking-wide" style={{ color: 'var(--cx-text-muted)' }}>
         {dateStr}
       </span>
       <span
         className="text-[11px] font-mono font-medium tabular-nums"
-        style={{ color: '#38bdf8', opacity: 0.7 }}
+        style={{ color: 'var(--cx-accent-vivid)', opacity: 0.7 }}
       >
         {timeStr}
       </span>
@@ -298,15 +298,15 @@ export const Menu = () => {
             <div
               className="w-6 h-6 rounded-[7px] flex items-center justify-center text-xs"
               style={{
-                background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15))',
-                border: '1px solid rgba(56, 189, 248, 0.15)',
+                background: 'var(--cx-accent-glow)',
+                border: '1px solid var(--cx-border-medium)',
               }}
             >
               ⚡
             </div>
             <span
               className="text-sm font-semibold tracking-tight"
-              style={{ color: '#e2e8f0' }}
+              style={{ color: 'var(--cx-text-primary)' }}
             >
               History
             </span>
@@ -314,15 +314,15 @@ export const Menu = () => {
           <div className="flex items-center gap-2">
             <span
               className="text-xs font-medium"
-              style={{ color: '#64748b' }}
+              style={{ color: 'var(--cx-text-muted)' }}
             >
               {profile?.username || 'Guest'}
             </span>
             <div
               className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--cx-hover)',
+                border: '1px solid var(--cx-border)',
               }}
             >
               {profile?.avatar ? (
@@ -334,7 +334,7 @@ export const Menu = () => {
                   decoding="sync"
                 />
               ) : (
-                <Icon name="user" size={14} style={{ color: '#64748b' }} />
+                <Icon name="user" size={14} style={{ color: 'var(--cx-text-muted)' }} />
               )}
             </div>
           </div>
@@ -349,18 +349,18 @@ export const Menu = () => {
                 href="/"
                 className="flex-1 flex gap-2 items-center justify-center rounded-[10px] px-3 py-2 text-[13px] font-medium transition-all duration-200"
                 style={{
-                  background: 'rgba(56, 189, 248, 0.08)',
-                  border: '1px solid rgba(56, 189, 248, 0.15)',
-                  color: '#38bdf8',
+                  background: 'var(--cx-accent-glow)',
+                  border: '1px solid var(--cx-border-medium)',
+                  color: 'var(--cx-accent-vivid)',
                   textDecoration: 'none',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(56, 189, 248, 0.13)';
-                  e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+                  e.currentTarget.style.background = 'var(--cx-accent-glow-strong)';
+                  e.currentTarget.style.borderColor = 'var(--cx-border-strong)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
-                  e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.15)';
+                  e.currentTarget.style.background = 'var(--cx-accent-glow)';
+                  e.currentTarget.style.borderColor = 'var(--cx-border-medium)';
                 }}
               >
                 <Icon name="plus-circle" size={14} />
@@ -370,9 +370,9 @@ export const Menu = () => {
                 onClick={toggleSelectionMode}
                 className="flex items-center justify-center rounded-[10px] px-2.5 py-2 transition-all duration-200"
                 style={{
-                  background: selectionMode ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255, 255, 255, 0.04)',
-                  border: `1px solid ${selectionMode ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.07)'}`,
-                  color: selectionMode ? '#38bdf8' : '#64748b',
+                  background: selectionMode ? 'var(--cx-accent-glow)' : 'var(--cx-hover)',
+                  border: `1px solid ${selectionMode ? 'var(--cx-border-medium)' : 'var(--cx-border)'}`,
+                  color: selectionMode ? 'var(--cx-accent-vivid)' : 'var(--cx-text-muted)',
                 }}
                 aria-label={selectionMode ? 'Exit selection mode' : 'Enter selection mode'}
               >
@@ -382,7 +382,7 @@ export const Menu = () => {
 
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Icon name="search" size={13} style={{ color: '#475569' }} />
+                <Icon name="search" size={13} style={{ color: 'var(--cx-text-muted)' }} />
               </div>
               <input
                 className="cx-search-input w-full pl-9 pr-3 py-2 rounded-[9px] text-[13px]"
@@ -396,7 +396,7 @@ export const Menu = () => {
           </div>
 
           <div className="flex items-center justify-between px-4 pb-2">
-            <span className="text-[11px] font-medium tracking-[0.05em] uppercase" style={{ color: '#475569' }}>
+            <span className="text-[11px] font-medium tracking-[0.05em] uppercase" style={{ color: 'var(--cx-text-muted)' }}>
               Sessions
             </span>
             {selectionMode && (
@@ -404,7 +404,7 @@ export const Menu = () => {
                 <button
                   onClick={selectAll}
                   className="text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors"
-                  style={{ color: '#64748b', background: 'rgba(255, 255, 255, 0.04)' }}
+                  style={{ color: 'var(--cx-text-secondary)', background: 'var(--cx-hover)' }}
                 >
                   {selectedItems.length === filteredList.length ? 'Deselect all' : 'Select all'}
                 </button>
@@ -412,7 +412,7 @@ export const Menu = () => {
                   onClick={handleBulkDeleteClick}
                   disabled={selectedItems.length === 0}
                   className="text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors disabled:opacity-40"
-                  style={{ color: '#f87171', background: 'rgba(239, 68, 68, 0.08)' }}
+                  style={{ color: 'var(--bolt-elements-icon-error)', background: 'var(--bolt-elements-item-backgroundDanger)' }}
                 >
                   Delete
                 </button>
@@ -427,14 +427,14 @@ export const Menu = () => {
               >
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
-                  style={{ background: 'rgba(255, 255, 255, 0.04)' }}
+                  style={{ background: 'var(--cx-hover)' }}
                 >
-                  <Icon name="chat" size={18} style={{ color: '#475569' }} />
+                  <Icon name="chat" size={18} style={{ color: 'var(--cx-text-muted)' }} />
                 </div>
-                <p className="text-[12px] font-medium" style={{ color: '#475569' }}>
+                <p className="text-[12px] font-medium" style={{ color: 'var(--cx-text-muted)' }}>
                   {list.length === 0 ? 'No sessions yet' : 'No matches found'}
                 </p>
-                <p className="text-[11px] mt-1" style={{ color: '#334155' }}>
+                <p className="text-[11px] mt-1" style={{ color: 'var(--cx-text-muted)' }}>
                   {list.length === 0 ? 'Start a new conversation' : 'Try a different search'}
                 </p>
               </div>
@@ -446,8 +446,8 @@ export const Menu = () => {
                   <div
                     className="text-[10px] font-semibold tracking-[0.08em] uppercase px-2 py-1 mb-1 sticky top-0"
                     style={{
-                      color: '#374151',
-                      background: 'rgba(8, 12, 20, 0.96)',
+                      color: 'var(--cx-text-muted)',
+                      background: 'var(--cx-bg)',
                     }}
                   >
                     {category}
@@ -478,18 +478,18 @@ export const Menu = () => {
                   <>
                     <div
                       className="p-5"
-                      style={{ background: 'rgba(8, 12, 20, 0.98)' }}
+                      style={{ background: 'var(--cx-surface)' }}
                     >
-                      <DialogTitle style={{ color: '#f0f4f8', fontSize: '15px', fontWeight: 600 }}>
+                      <DialogTitle style={{ color: 'var(--cx-text-primary)', fontSize: '15px', fontWeight: 600 }}>
                         Delete session?
                       </DialogTitle>
                       <DialogDescription
                         className="mt-2"
-                        style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.6 }}
+                        style={{ color: 'var(--cx-text-secondary)', fontSize: '13px', lineHeight: 1.6 }}
                       >
                         <p>
                           This will permanently delete{' '}
-                          <span style={{ color: '#94a3b8', fontWeight: 500 }}>
+                          <span style={{ color: 'var(--cx-text-primary)', fontWeight: 500 }}>
                             "{dialogContent.item.description}"
                           </span>
                           .
@@ -499,8 +499,8 @@ export const Menu = () => {
                     <div
                       className="flex justify-end gap-2 px-5 py-4"
                       style={{
-                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                        background: 'rgba(12, 17, 32, 0.98)',
+                        borderTop: '1px solid var(--cx-border)',
+                        background: 'var(--cx-surface-raised)',
                       }}
                     >
                       <DialogButton type="secondary" onClick={closeDialog}>
@@ -522,26 +522,26 @@ export const Menu = () => {
                   <>
                     <div
                       className="p-5"
-                      style={{ background: 'rgba(8, 12, 20, 0.98)' }}
+                      style={{ background: 'var(--cx-surface)' }}
                     >
-                      <DialogTitle style={{ color: '#f0f4f8', fontSize: '15px', fontWeight: 600 }}>
+                      <DialogTitle style={{ color: 'var(--cx-text-primary)', fontSize: '15px', fontWeight: 600 }}>
                         Delete {dialogContent.items.length} sessions?
                       </DialogTitle>
                       <DialogDescription
                         className="mt-2"
-                        style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.6 }}
+                        style={{ color: 'var(--cx-text-secondary)', fontSize: '13px', lineHeight: 1.6 }}
                       >
                         <p>
                           This action cannot be undone. All selected sessions will be permanently removed.
                         </p>
                         <div
                           className="mt-3 max-h-32 overflow-auto rounded-[8px] p-2.5"
-                          style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                          style={{ background: 'var(--cx-hover)', border: '1px solid var(--cx-border)' }}
                         >
                           <ul className="space-y-1">
                             {dialogContent.items.map((item) => (
-                              <li key={item.id} className="text-[12px] flex items-center gap-2" style={{ color: '#94a3b8' }}>
-                                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#475569' }} />
+                              <li key={item.id} className="text-[12px] flex items-center gap-2" style={{ color: 'var(--cx-text-secondary)' }}>
+                                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--cx-text-muted)' }} />
                                 {item.description}
                               </li>
                             ))}
@@ -552,8 +552,8 @@ export const Menu = () => {
                     <div
                       className="flex justify-end gap-2 px-5 py-4"
                       style={{
-                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                        background: 'rgba(12, 17, 32, 0.98)',
+                        borderTop: '1px solid var(--cx-border)',
+                        background: 'var(--cx-surface-raised)',
                       }}
                     >
                       <DialogButton type="secondary" onClick={closeDialog}>
@@ -578,7 +578,7 @@ export const Menu = () => {
 
           <div
             className="flex items-center justify-between px-3 py-3"
-            style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}
+            style={{ borderTop: '1px solid var(--cx-border)' }}
           >
             <SettingsButton onClick={handleSettingsClick} />
             <ThemeSwitch />

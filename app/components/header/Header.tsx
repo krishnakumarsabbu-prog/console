@@ -21,8 +21,8 @@ export function Header() {
           <div
             className="relative flex items-center justify-center w-8 h-8 rounded-[10px] overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15))',
-              border: '1px solid rgba(56, 189, 248, 0.2)',
+              background: 'var(--cx-accent-glow)',
+              border: '1px solid var(--cx-border-medium)',
             }}
           >
             <span className="text-base leading-none">⚡</span>
@@ -31,7 +31,7 @@ export function Header() {
             <span
               className="text-[15px] font-semibold tracking-tight leading-none"
               style={{
-                background: 'linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%)',
+                background: 'linear-gradient(135deg, var(--cx-text-primary) 0%, var(--cx-text-secondary) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -41,7 +41,7 @@ export function Header() {
             </span>
             <span
               className="text-[9px] font-medium tracking-[0.12em] uppercase leading-none mt-0.5"
-              style={{ color: '#38bdf8', opacity: 0.8 }}
+              style={{ color: 'var(--cx-accent-vivid)', opacity: 0.8 }}
             >
               Console
             </span>
@@ -56,14 +56,14 @@ export function Header() {
               <div
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm truncate max-w-sm"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  color: '#94a3b8',
+                  background: 'var(--cx-hover)',
+                  border: '1px solid var(--cx-border)',
+                  color: 'var(--cx-text-secondary)',
                 }}
               >
                 <div
                   className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ background: '#38bdf8', boxShadow: '0 0 6px #38bdf8' }}
+                  style={{ background: 'var(--cx-accent-vivid)', boxShadow: '0 0 6px var(--cx-accent-vivid)' }}
                 />
                 <span className="truncate text-xs font-medium tracking-tight">
                   <ClientOnly>{() => <ChatDescription />}</ClientOnly>

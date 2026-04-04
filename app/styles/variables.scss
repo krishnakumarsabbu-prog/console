@@ -154,6 +154,19 @@
   --vscode-active-border: rgba(34,211,238,0.3);
   --vscode-selected: rgba(255,255,255,0.04);
   --vscode-hover: rgba(255,255,255,0.06);
+
+  /* Unified shorthand aliases */
+  --cx-border: rgba(255,255,255,0.07);
+  --cx-hover: rgba(255,255,255,0.05);
+  --cx-text-primary: #ecf0f6;
+  --cx-text-secondary: #8ba3bf;
+
+  /* Ambient orb colors (theme-specific) */
+  --cx-orb1-color: rgba(14,165,233,0.07);
+  --cx-orb2-color: rgba(99,102,241,0.04);
+  --cx-horizon-color: rgba(34,211,238,0.12);
+  --cx-composer-bg: rgba(11,16,24,0.88);
+  --cx-composer-glow: rgba(34,211,238,0.08);
 }
 
 /* ============================================================
@@ -292,6 +305,17 @@
   --vscode-active-border: rgba(251,191,36,0.3);
   --vscode-selected: rgba(255,255,255,0.04);
   --vscode-hover: rgba(255,255,255,0.06);
+
+  --cx-border: rgba(255,255,255,0.08);
+  --cx-hover: rgba(255,255,255,0.05);
+  --cx-text-primary: #e8f0e4;
+  --cx-text-secondary: #7a9e72;
+
+  --cx-orb1-color: rgba(74,222,128,0.05);
+  --cx-orb2-color: rgba(251,191,36,0.04);
+  --cx-horizon-color: rgba(251,191,36,0.1);
+  --cx-composer-bg: rgba(10,21,16,0.88);
+  --cx-composer-glow: rgba(251,191,36,0.07);
 }
 
 /* ============================================================
@@ -430,6 +454,17 @@
   --vscode-active-border: rgba(251,146,60,0.3);
   --vscode-selected: rgba(255,255,255,0.04);
   --vscode-hover: rgba(255,255,255,0.06);
+
+  --cx-border: rgba(255,255,255,0.08);
+  --cx-hover: rgba(255,255,255,0.05);
+  --cx-text-primary: #f5ede6;
+  --cx-text-secondary: #9e8578;
+
+  --cx-orb1-color: rgba(251,146,60,0.06);
+  --cx-orb2-color: rgba(251,191,36,0.03);
+  --cx-horizon-color: rgba(251,146,60,0.1);
+  --cx-composer-bg: rgba(22,18,16,0.88);
+  --cx-composer-glow: rgba(251,146,60,0.07);
 }
 
 /* ============================================================
@@ -568,6 +603,17 @@
   --vscode-active-border: rgba(180,83,9,0.35);
   --vscode-selected: rgba(0,0,0,0.05);
   --vscode-hover: rgba(0,0,0,0.06);
+
+  --cx-border: rgba(0,0,0,0.09);
+  --cx-hover: rgba(0,0,0,0.04);
+  --cx-text-primary: #1a1208;
+  --cx-text-secondary: #5c4a2e;
+
+  --cx-orb1-color: rgba(180,83,9,0.06);
+  --cx-orb2-color: rgba(8,145,178,0.04);
+  --cx-horizon-color: rgba(180,83,9,0.1);
+  --cx-composer-bg: rgba(242,237,228,0.92);
+  --cx-composer-glow: rgba(180,83,9,0.08);
 }
 
 /* ============================================================
