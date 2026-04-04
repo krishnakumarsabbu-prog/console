@@ -401,9 +401,9 @@ export const Workbench = memo(
 
     return (
       chatStarted && (
-        <div ref={containerRef} className="flex-1 flex flex-col overflow-hidden h-full rounded-2xl bg-[var(--vscode-bg)] border border-[var(--vscode-border)] shadow-2xl relative">
+        <div ref={containerRef} className="flex-1 flex flex-col overflow-hidden h-full rounded-2xl bg-[var(--vscode-bg)] relative" style={{ boxShadow: 'var(--cx-shadow-panel)', border: '1px solid var(--cx-border)' }}>
           {/* HEADER SECTION - Spans full width above both sidebar and editor */}
-          <div className="flex items-center px-4 py-2 border-b border-[var(--vscode-border)] gap-1.5 bg-[var(--vscode-sidebar-bg)] z-20 shrink-0 rounded-t-2xl">
+          <div className="flex items-center px-4 py-2.5 gap-1.5 z-20 shrink-0 rounded-t-2xl" style={{ background: 'var(--cx-surface)', borderBottom: '1px solid var(--cx-border)' }}>
             <IconButton
               icon="panel-left"
               disabled={!canHideChat || isSmallViewport}
@@ -480,7 +480,7 @@ export const Workbench = memo(
           <div className="flex-1 flex overflow-hidden w-full relative">
             {selectedView !== 'preview' && (
               <>
-                <div style={{ width: sidebarWidth }} className="flex-shrink-0 bg-[var(--vscode-sidebar-bg)] border-r border-[var(--vscode-border)] h-full overflow-hidden">
+                <div style={{ width: sidebarWidth, borderRight: '1px solid var(--cx-border)', background: 'var(--cx-surface)' }} className="flex-shrink-0 h-full overflow-hidden">
                   <SideBar
                     files={files}
                     unsavedFiles={unsavedFiles}
@@ -491,13 +491,14 @@ export const Workbench = memo(
                 </div>
 
                 <div
-                  className="w-2 bg-transparent hover:bg-[var(--vscode-active-border)] cursor-col-resize transition-colors z-50 shrink-0"
+                  className="w-1 cursor-col-resize transition-colors z-50 shrink-0"
+                  style={{ background: 'var(--cx-border)' }}
                   onMouseDown={() => setIsResizingSidebar(true)}
                 />
               </>
             )}
 
-            <div className="flex-1 flex flex-col min-w-0 bg-[var(--vscode-editor-bg)] relative h-full">
+            <div className="flex-1 flex flex-col min-w-0 relative h-full" style={{ background: 'var(--cx-bg)' }}>
               <div className="relative flex-1 overflow-hidden">
                 <View initial={{ x: '0%' }} animate={{ x: selectedView === 'code' ? '0%' : '-100%' }}>
                 <EditorPanel

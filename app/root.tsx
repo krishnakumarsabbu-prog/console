@@ -17,17 +17,14 @@ const inlineThemeCode = stripIndents`
   setTutorialKitTheme();
 
   function setTutorialKitTheme() {
+    const validThemes = ['obsidian', 'aurora', 'forge', 'ivory'];
     let theme = localStorage.getItem('cortex_theme') || localStorage.getItem('bolt_theme');
 
-    if (!theme) {
-      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (!theme || !validThemes.includes(theme)) {
+      theme = 'obsidian';
     }
 
-    if (theme === 'dark') {
-       document.querySelector('html')?.removeAttribute('data-theme');
-    } else {
-       document.querySelector('html')?.setAttribute('data-theme', theme);
-    }
+    document.querySelector('html')?.setAttribute('data-theme', theme);
   }
 `;
 
@@ -37,11 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useNanoStore(themeStore);
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.querySelector('html')?.removeAttribute('data-theme');
-    } else {
-      document.querySelector('html')?.setAttribute('data-theme', theme);
-    }
+    document.querySelector('html')?.setAttribute('data-theme', theme);
   }, [theme]);
 
   return (

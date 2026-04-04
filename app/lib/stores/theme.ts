@@ -1,78 +1,66 @@
 import { atom } from 'nanostores';
 import { logStore } from './logs';
 
-export type Theme = 'dark' | 'light' | 'monokai';
+export type Theme = 'obsidian' | 'aurora' | 'forge' | 'ivory';
 
 export const kTheme = 'cortex_theme';
 
 export function themeIsDark() {
-  return themeStore.get() === 'dark' || themeStore.get() === 'monokai';
+  const t = themeStore.get();
+  return t === 'obsidian' || t === 'aurora' || t === 'forge';
 }
 
-export const DEFAULT_THEME = 'light';
+export const DEFAULT_THEME: Theme = 'obsidian';
 
 export const themeStore = atom<Theme>(initStore());
 
-function initStore() {
+function initStore(): Theme {
   if (!import.meta.env.SSR) {
-    const persistedTheme = (localStorage.getItem(kTheme) || localStorage.getItem('bolt_theme')) as Theme | undefined;
-    const themeAttribute = document.querySelector('html')?.getAttribute('data-theme');
+    const persisted = (localStorage.getItem(kTheme) || localStorage.getItem('bolt_theme')) as Theme | undefined;
 
-    if (persistedTheme) {
-      return persistedTheme;
+    if (persisted && ['obsidian', 'aurora', 'forge', 'ivory'].includes(persisted)) {
+      return persisted;
     }
 
-    // specific check: if data-theme is empty or null, treat as dark (per user preference)
-    if (themeAttribute === '' || themeAttribute === null) {
-      return 'dark';
+    const attr = document.querySelector('html')?.getAttribute('data-theme') as Theme | null;
+
+    if (attr && ['obsidian', 'aurora', 'forge', 'ivory'].includes(attr)) {
+      return attr;
     }
 
-    return (themeAttribute as Theme) ?? DEFAULT_THEME;
+    return DEFAULT_THEME;
   }
 
   return DEFAULT_THEME;
 }
 
 export function toggleTheme() {
-  const currentTheme = themeStore.get();
-  let newTheme: Theme;
+  const current = themeStore.get();
+  const cycle: Theme[] = ['obsidian', 'aurora', 'forge', 'ivory'];
+  const next = cycle[(cycle.indexOf(current) + 1) % cycle.length];
 
-  if (currentTheme === 'light') {
-    newTheme = 'dark';
-  } else if (currentTheme === 'dark') {
-    newTheme = 'monokai';
-  } else {
-    newTheme = 'light';
-  }
+  themeStore.set(next);
+  localStorage.setItem(kTheme, next);
+  document.querySelector('html')?.setAttribute('data-theme', next);
 
-  // Update the theme store
-  themeStore.set(newTheme);
-
-  // Update localStorage
-  localStorage.setItem(kTheme, newTheme);
-
-  // Update the HTML attribute
-  const attributeValue = newTheme === 'dark' ? '' : newTheme;
-  console.log(`Setting theme to ${newTheme}, attribute to "${attributeValue}"`);
-
-  if (attributeValue === '') {
-    document.querySelector('html')?.removeAttribute('data-theme');
-  } else {
-    document.querySelector('html')?.setAttribute('data-theme', attributeValue);
-  }
-
-  // Update user profile if it exists
   try {
-    const userProfile = localStorage.getItem('cortex_user_profile') || localStorage.getItem('bolt_user_profile');
+    const raw = localStorage.getItem('cortex_user_profile') || localStorage.getItem('bolt_user_profile');
 
-    if (userProfile) {
-      const profile = JSON.parse(userProfile);
-      profile.theme = newTheme;
+    if (raw) {
+      const profile = JSON.parse(raw);
+      profile.theme = next;
       localStorage.setItem('cortex_user_profile', JSON.stringify(profile));
     }
-  } catch (error) {
-    console.error('Error updating user profile theme:', error);
+  } catch {
+    // noop
   }
 
-  logStore.logSystem(`Theme changed to ${newTheme} mode`);
+  logStore.logSystem(`Theme changed to ${next}`);
+}
+
+export function setTheme(theme: Theme) {
+  themeStore.set(theme);
+  localStorage.setItem(kTheme, theme);
+  document.querySelector('html')?.setAttribute('data-theme', theme);
+  logStore.logSystem(`Theme set to ${theme}`);
 }

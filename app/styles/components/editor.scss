@@ -92,36 +92,59 @@
   --cm-searchMatch-backgroundColor: var(--bolt-elements-editor-searchMatch-backgroundColor, rgba(234, 92, 0, 0.33));
 }
 
-html[data-theme='light'] {
-  --bolt-elements-editor-gutter-textColor: #237893;
-  --bolt-elements-editor-gutter-activeLineTextColor: var(--bolt-elements-textPrimary);
-  --bolt-elements-editor-foldGutter-textColorHover: var(--bolt-elements-textPrimary);
-  --bolt-elements-editor-activeLineBackgroundColor: rgb(50 53 63 / 5%);
-  --bolt-elements-editor-tooltip-backgroundColorSelected: theme('colors.alpha.accent.20');
-  --bolt-elements-editor-search-button-backgroundColor: theme('colors.gray.100');
-  --bolt-elements-editor-search-button-backgroundColorHover: theme('colors.alpha.gray.10');
+/* Obsidian - deep space / electric cyan */
+html[data-theme='obsidian'] {
+  --cm-backgroundColor: #0a0e18;
+  --bolt-elements-editor-gutter-textColor: #3a4a5c;
+  --bolt-elements-editor-gutter-activeLineTextColor: #64748b;
+  --bolt-elements-editor-selection-backgroundColor: #22d3ee;
+  --bolt-elements-editor-selection-backgroundOpacity: 0.15;
+  --bolt-elements-editor-activeLineBackgroundColor: rgba(34, 211, 238, 0.04);
+  --bolt-elements-editor-matchingBracketBackgroundColor: rgba(34, 211, 238, 0.2);
+  --bolt-elements-editor-search-button-backgroundColor: #111827;
+  --bolt-elements-editor-search-button-backgroundColorHover: rgba(255,255,255,0.06);
+  --bolt-elements-editor-foldGutter-textColorHover: #94a3b8;
 }
 
-html[data-theme='dark'] {
-  --cm-backgroundColor: var(--bolt-elements-bg-depth-2);
-  --bolt-elements-editor-gutter-textColor: var(--bolt-elements-textTertiary);
-  --bolt-elements-editor-gutter-activeLineTextColor: var(--bolt-elements-textSecondary);
-  --bolt-elements-editor-selection-inactiveBackgroundOpacity: 0.3;
-  --bolt-elements-editor-activeLineBackgroundColor: rgb(50 53 63 / 50%);
-  --bolt-elements-editor-foldGutter-textColorHover: var(--bolt-elements-textPrimary);
-  --bolt-elements-editor-matchingBracketBackgroundColor: rgba(66, 180, 255, 0.3);
-  --bolt-elements-editor-search-button-backgroundColor: theme('colors.gray.800');
-  --bolt-elements-editor-search-button-backgroundColorHover: theme('colors.alpha.white.10');
+/* Aurora - deep forest / amber gold */
+html[data-theme='aurora'] {
+  --cm-backgroundColor: #080f0a;
+  --bolt-elements-editor-gutter-textColor: #2d3f2e;
+  --bolt-elements-editor-gutter-activeLineTextColor: #4a6b3a;
+  --bolt-elements-editor-selection-backgroundColor: #fbbf24;
+  --bolt-elements-editor-selection-backgroundOpacity: 0.15;
+  --bolt-elements-editor-activeLineBackgroundColor: rgba(251, 191, 36, 0.04);
+  --bolt-elements-editor-matchingBracketBackgroundColor: rgba(251, 191, 36, 0.2);
+  --bolt-elements-editor-search-button-backgroundColor: #0d1a0f;
+  --bolt-elements-editor-search-button-backgroundColorHover: rgba(255,255,255,0.05);
+  --bolt-elements-editor-foldGutter-textColorHover: #86a878;
 }
 
-html[data-theme='monokai'] {
-  --cm-backgroundColor: var(--bolt-elements-bg-depth-1);
-  --bolt-elements-editor-gutter-textColor: var(--bolt-elements-textTertiary);
-  --bolt-elements-editor-gutter-activeLineTextColor: var(--bolt-elements-textPrimary);
-  --bolt-elements-editor-selection-backgroundColor: #49483e;
-  --bolt-elements-editor-selection-backgroundOpacity: 1;
-  --bolt-elements-editor-activeLineBackgroundColor: #3e3d32;
-  --bolt-elements-editor-matchingBracketBackgroundColor: #3e3d32;
-  --bolt-elements-editor-search-button-backgroundColor: #3e3d32;
-  --bolt-elements-editor-search-button-backgroundColorHover: #49483e;
+/* Forge - warm charcoal / molten copper */
+html[data-theme='forge'] {
+  --cm-backgroundColor: #100d0b;
+  --bolt-elements-editor-gutter-textColor: #3a2f27;
+  --bolt-elements-editor-gutter-activeLineTextColor: #6b4f3a;
+  --bolt-elements-editor-selection-backgroundColor: #fb923c;
+  --bolt-elements-editor-selection-backgroundOpacity: 0.15;
+  --bolt-elements-editor-activeLineBackgroundColor: rgba(251, 146, 60, 0.04);
+  --bolt-elements-editor-matchingBracketBackgroundColor: rgba(251, 146, 60, 0.2);
+  --bolt-elements-editor-search-button-backgroundColor: #1a130e;
+  --bolt-elements-editor-search-button-backgroundColorHover: rgba(255,255,255,0.05);
+  --bolt-elements-editor-foldGutter-textColorHover: #a8896a;
+}
+
+/* Ivory - warm cream / rich ink (light theme) */
+html[data-theme='ivory'] {
+  --cm-backgroundColor: #f5f2ec;
+  --bolt-elements-editor-gutter-textColor: #9a8c7e;
+  --bolt-elements-editor-gutter-activeLineTextColor: #6b5b4e;
+  --bolt-elements-editor-selection-backgroundColor: #b45309;
+  --bolt-elements-editor-selection-backgroundOpacity: 0.15;
+  --bolt-elements-editor-activeLineBackgroundColor: rgba(180, 83, 9, 0.04);
+  --bolt-elements-editor-matchingBracketBackgroundColor: rgba(180, 83, 9, 0.15);
+  --bolt-elements-editor-search-button-backgroundColor: #ede8df;
+  --bolt-elements-editor-search-button-backgroundColorHover: rgba(0,0,0,0.05);
+  --bolt-elements-editor-foldGutter-textColorHover: #6b5b4e;
+  --bolt-elements-editor-tooltip-backgroundColorSelected: rgba(180, 83, 9, 0.15);
 }
