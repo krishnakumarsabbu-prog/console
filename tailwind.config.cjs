@@ -113,6 +113,29 @@ module.exports = {
           900: '#1E3A8A',
           950: '#172554',
         },
+        /* Cortex Console design tokens */
+        cx: {
+          bg: 'var(--cx-bg, #080c14)',
+          surface: 'var(--cx-surface, #0c1120)',
+          sky: 'var(--cx-sky, #38bdf8)',
+          'sky-dim': 'var(--cx-sky-dim, rgba(56, 189, 248, 0.6))',
+          'surface-glass': 'var(--cx-surface-glass)',
+          'surface-raised': 'var(--cx-surface-raised)',
+          'accent-primary': 'var(--cx-accent-primary)',
+          'accent-secondary': 'var(--cx-accent-secondary)',
+          'accent-glow': 'var(--cx-accent-glow)',
+          'text-display': 'var(--cx-text-display)',
+          'text-body': 'var(--cx-text-body)',
+          'text-muted': 'var(--cx-text-muted)',
+          'text-accent': 'var(--cx-text-accent)',
+          'border-subtle': 'var(--cx-border-subtle)',
+          'border-medium': 'var(--cx-border-medium)',
+        },
+        /* Slate / Sky palette extensions */
+        slate: {
+          925: '#0c1120',
+          950: '#080c14',
+        },
         bolt: {
           elements: {
             borderColor: 'var(--bolt-elements-borderColor)',
@@ -235,6 +258,26 @@ module.exports = {
       },
       transitionTimingFunction: {
         'bolt-ease': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'cx-ease-out': 'cubic-bezier(0.25, 1, 0.5, 1)',
+        'cx-spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'cx-smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
+      borderRadius: {
+        'cx-sm': '6px',
+        'cx-md': '10px',
+        'cx-lg': '14px',
+        'cx-xl': '20px',
+        'cx-2xl': '28px',
+      },
+      boxShadow: {
+        'cx-sm': '0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)',
+        'cx-md': '0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25)',
+        'cx-lg': '0 20px 60px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.35)',
+        'cx-glow': '0 0 40px rgba(14, 165, 233, 0.15), 0 0 80px rgba(99, 102, 241, 0.08)',
       },
     },
   },

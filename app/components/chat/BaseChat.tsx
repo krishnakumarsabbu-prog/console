@@ -394,18 +394,17 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       <div
         ref={ref}
         className={classNames(styles.BaseChat, 'relative flex h-full w-full overflow-hidden')}
-        style={{ backgroundColor: 'var(--vscode-bg, #020617)' }}
+        style={{ backgroundColor: '#080c14' }}
         data-chat-visible={showChat}
       >
-        {/* === STARFIELD BACKGROUND — Always visible behind everything === */}
+        {/* === PREMIUM AMBIENT BACKGROUND === */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
-          {/* Star layers - different sizes & twinkle speeds */}
+          <div className="cx-ambient-orb-1" />
+          <div className="cx-ambient-orb-2" />
+          <div className="cx-grid" />
+          <div className="cx-noise" />
           <div className="devcure-stars devcure-stars-sm" />
           <div className="devcure-stars devcure-stars-md" />
-          <div className="devcure-stars devcure-stars-lg" />
-
-          {/* Noise grain overlay for cinematic texture over the slate black */}
-          <div className="devcure-noise" />
         </div>
 
         <ClientOnly>{() => <Menu />}</ClientOnly>
@@ -419,22 +418,35 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
           >
 
             {!chatStarted && (
-              <div id="intro" className="mt-[10vh] max-w-3xl mx-auto text-center px-4 lg:px-0 devcure-hero" style={{ zIndex: 1, position: 'relative' }}>
-                {/* DevCure Logo */}
-                <div className="flex items-center justify-center gap-3 mb-6 devcure-fade-in">
-                  <span className="text-4xl">🩺</span>
-                  <span className="text-3xl font-bold devcure-gradient-text">DevCure</span>
+              <div
+                id="intro"
+                className="mt-[8vh] max-w-2xl mx-auto text-center px-6 lg:px-0 cx-hero"
+                style={{ zIndex: 1, position: 'relative' }}
+              >
+                <div className="flex items-center justify-center mb-8 cx-entrance">
+                  <div className="cx-hero-eyebrow">
+                    AI Development Console
+                  </div>
                 </div>
 
-                <h1 className="text-3xl lg:text-6xl font-bold mb-4 devcure-fade-in devcure-delay-200">
-                  <span className="devcure-gradient-text">
-                    Heal, Fix &amp; Optimize
+                <h1
+                  className="text-[clamp(2rem,5vw,3.5rem)] font-bold mb-5 leading-[1.1] tracking-tight cx-entrance cx-anim-delay-100"
+                  style={{ letterSpacing: '-0.03em' }}
+                >
+                  <span className="cx-gradient-text-hero">
+                    Build. Debug. Ship.
                   </span>
                   <br />
-                  <span className="text-white">Your Code</span>
+                  <span style={{ color: '#64748b', fontWeight: 400 }}>
+                    With intelligence.
+                  </span>
                 </h1>
-                <p className="text-md lg:text-lg mb-8 text-gray-400 devcure-fade-in devcure-delay-400 max-w-xl mx-auto">
-                  Your AI coding doctor that diagnoses, fixes, and optimizes your code in seconds.
+
+                <p
+                  className="text-[15px] lg:text-[16px] mb-10 leading-relaxed cx-entrance cx-anim-delay-200 max-w-lg mx-auto"
+                  style={{ color: '#475569', lineHeight: 1.7 }}
+                >
+                  Describe what you want to build or fix. Cortex Console generates, debugs, and deploys production-ready code.
                 </p>
               </div>
             )}
@@ -552,7 +564,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
 
           {chatStarted && (
             <div
-              className="w-2 bg-transparent hover:bg-[var(--vscode-active-border)] cursor-col-resize transition-colors z-50 shrink-0"
+              className="cx-resize-handle z-50"
               onMouseDown={() => setIsResizingChat(true)}
             />
           )}
@@ -578,13 +590,16 @@ function ScrollToBottom() {
   return (
     !isAtBottom && (
       <>
-        <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-[#0A0F1C] to-transparent h-20 z-10" />
+        <div
+          className="sticky bottom-0 left-0 right-0 h-16 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, #080c14 0%, transparent 100%)' }}
+        />
         <button
-          className="sticky z-50 bottom-0 left-0 right-0 text-4xl rounded-lg px-1.5 py-0.5 flex items-center justify-center mx-auto gap-2 bg-[#111827] border border-[rgba(255,255,255,0.1)] text-gray-300 text-sm"
+          className="cx-scroll-pill sticky z-50 bottom-2 mx-auto"
           onClick={() => scrollToBottom()}
         >
-          Go to last message
-          <Icon name="arrow-down" className="animate-bounce" />
+          <Icon name="arrow-down" size={13} />
+          <span>Latest message</span>
         </button>
       </>
     )

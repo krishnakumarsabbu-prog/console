@@ -11,21 +11,39 @@ const FrameworkLink: React.FC<FrameworkLinkProps> = ({ template }) => (
     href={`/git?url=https://github.com/${template.githubRepo}.git`}
     data-state="closed"
     data-discover="true"
-    className="items-center justify-center"
+    title={template.label}
+    style={{ textDecoration: 'none' }}
   >
     <div
-      className={`inline-block ${template.icon} w-8 h-8 text-4xl transition-all opacity-30 hover:opacity-100 text-gray-400 hover:text-teal-400`}
-      title={template.label}
+      className={`cx-template-icon inline-block ${template.icon} w-7 h-7`}
     />
   </a>
 );
 
 const StarterTemplates: React.FC = () => {
   return (
-    <div className="flex flex-col items-center gap-4">
-      <span className="text-sm text-gray-500">or start a blank app with your favorite stack</span>
+    <div
+      className="flex flex-col items-center gap-4 pb-8"
+      style={{ animation: '0.4s ease-out 0.45s both cx-fade-up' }}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="h-px flex-1 w-12"
+          style={{ background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08))' }}
+        />
+        <span
+          className="text-[11px] font-medium tracking-[0.06em] uppercase"
+          style={{ color: '#334155' }}
+        >
+          or start with a template
+        </span>
+        <div
+          className="h-px flex-1 w-12"
+          style={{ background: 'linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08))' }}
+        />
+      </div>
       <div className="flex justify-center">
-        <div className="flex flex-wrap justify-center items-center gap-4 max-w-sm">
+        <div className="flex flex-wrap justify-center items-center gap-5 max-w-xs">
           {STARTER_TEMPLATES.map((template) => (
             <FrameworkLink key={template.name} template={template} />
           ))}

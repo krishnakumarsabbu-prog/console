@@ -22,7 +22,7 @@ const menuVariants = {
     visibility: 'hidden',
     left: '-340px',
     transition: {
-      duration: 0.2,
+      duration: 0.25,
       ease: cubicEasingFn,
     },
   },
@@ -31,7 +31,7 @@ const menuVariants = {
     visibility: 'initial',
     left: 0,
     transition: {
-      duration: 0.2,
+      duration: 0.25,
       ease: cubicEasingFn,
     },
   },
@@ -53,13 +53,23 @@ function CurrentDateTime() {
     return () => clearInterval(timer);
   }, []);
 
+  const timeStr = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = dateTime.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
   return (
-    <div className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
-      <Icon name="clock" size={14} className="opacity-80" />
-      <div className="flex gap-2">
-        <span>{dateTime.toLocaleDateString()}</span>
-        <span>{dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-      </div>
+    <div
+      className="flex items-center justify-between px-4 py-2.5"
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
+    >
+      <span className="text-[11px] font-medium tracking-wide" style={{ color: '#475569' }}>
+        {dateStr}
+      </span>
+      <span
+        className="text-[11px] font-mono font-medium tabular-nums"
+        style={{ color: '#38bdf8', opacity: 0.7 }}
+      >
+        {timeStr}
+      </span>
     </div>
   );
 }
@@ -95,18 +105,14 @@ export const Menu = () => {
         throw new Error('Database not available');
       }
 
-      // Delete chat snapshot from localStorage
       try {
         const snapshotKey = `snapshot:${id}`;
         localStorage.removeItem(snapshotKey);
-        console.log('Removed snapshot for chat:', id);
       } catch (snapshotError) {
         console.error(`Error deleting snapshot for chat ${id}:`, snapshotError);
       }
 
-      // Delete the chat from the database
       await deleteById(db, id);
-      console.log('Successfully deleted chat:', id);
     },
     [db],
   );
@@ -116,33 +122,18 @@ export const Menu = () => {
       event.preventDefault();
       event.stopPropagation();
 
-      // Log the delete operation to help debugging
-      console.log('Attempting to delete chat:', { id: item.id, description: item.description });
-
       deleteChat(item.id)
         .then(() => {
-          toast.success('Chat deleted successfully', {
-            position: 'bottom-right',
-            autoClose: 3000,
-          });
-
-          // Always refresh the list
+          toast.success('Chat deleted', { position: 'bottom-right', autoClose: 2500 });
           loadEntries();
 
           if (chatId.get() === item.id) {
-            // hard page navigation to clear the stores
-            console.log('Navigating away from deleted chat');
             window.location.pathname = '/';
           }
         })
         .catch((error) => {
           console.error('Failed to delete chat:', error);
-          toast.error('Failed to delete conversation', {
-            position: 'bottom-right',
-            autoClose: 3000,
-          });
-
-          // Still try to reload entries in case data has changed
+          toast.error('Failed to delete conversation', { position: 'bottom-right', autoClose: 3000 });
           loadEntries();
         });
     },
@@ -152,18 +143,14 @@ export const Menu = () => {
   const deleteSelectedItems = useCallback(
     async (itemsToDeleteIds: string[]) => {
       if (!db || itemsToDeleteIds.length === 0) {
-        console.log('Bulk delete skipped: No DB or no items to delete.');
         return;
       }
-
-      console.log(`Starting bulk delete for ${itemsToDeleteIds.length} chats`, itemsToDeleteIds);
 
       let deletedCount = 0;
       const errors: string[] = [];
       const currentChatId = chatId.get();
       let shouldNavigate = false;
 
-      // Process deletions sequentially using the shared deleteChat logic
       for (const id of itemsToDeleteIds) {
         try {
           await deleteChat(id);
@@ -178,52 +165,40 @@ export const Menu = () => {
         }
       }
 
-      // Show appropriate toast message
       if (errors.length === 0) {
-        toast.success(`${deletedCount} chat${deletedCount === 1 ? '' : 's'} deleted successfully`);
+        toast.success(`${deletedCount} chat${deletedCount === 1 ? '' : 's'} deleted`);
       } else {
         toast.warning(`Deleted ${deletedCount} of ${itemsToDeleteIds.length} chats. ${errors.length} failed.`, {
           autoClose: 5000,
         });
       }
 
-      // Reload the list after all deletions
       await loadEntries();
-
-      // Clear selection state
       setSelectedItems([]);
       setSelectionMode(false);
 
-      // Navigate if needed
       if (shouldNavigate) {
-        console.log('Navigating away from deleted chat');
         window.location.pathname = '/';
       }
     },
     [deleteChat, loadEntries, db],
   );
 
-  const closeDialog = () => {
-    setDialogContent(null);
-  };
+  const closeDialog = () => setDialogContent(null);
 
   const toggleSelectionMode = () => {
     setSelectionMode(!selectionMode);
 
     if (selectionMode) {
-      // If turning selection mode OFF, clear selection
       setSelectedItems([]);
     }
   };
 
   const toggleItemSelection = useCallback((id: string) => {
     setSelectedItems((prev) => {
-      const newSelectedItems = prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id];
-      console.log('Selected items updated:', newSelectedItems);
-
-      return newSelectedItems; // Return the new array
+      return prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id];
     });
-  }, []); // No dependencies needed
+  }, []);
 
   const handleBulkDeleteClick = useCallback(() => {
     if (selectedItems.length === 0) {
@@ -239,7 +214,7 @@ export const Menu = () => {
     }
 
     setDialogContent({ type: 'bulkDelete', items: selectedChats });
-  }, [selectedItems, list]); // Keep list dependency
+  }, [selectedItems, list]);
 
   const selectAll = useCallback(() => {
     const allFilteredIds = filteredList.map((item) => item.id);
@@ -247,37 +222,18 @@ export const Menu = () => {
       const allFilteredAreSelected = allFilteredIds.length > 0 && allFilteredIds.every((id) => prev.includes(id));
 
       if (allFilteredAreSelected) {
-        // Deselect only the filtered items
-        const newSelectedItems = prev.filter((id) => !allFilteredIds.includes(id));
-        console.log('Deselecting all filtered items. New selection:', newSelectedItems);
-
-        return newSelectedItems;
+        return prev.filter((id) => !allFilteredIds.includes(id));
       } else {
-        // Select all filtered items, adding them to any existing selections
-        const newSelectedItems = [...new Set([...prev, ...allFilteredIds])];
-        console.log('Selecting all filtered items. New selection:', newSelectedItems);
-
-        return newSelectedItems;
+        return [...new Set([...prev, ...allFilteredIds])];
       }
     });
-  }, [filteredList]); // Depends only on filteredList
+  }, [filteredList]);
 
   useEffect(() => {
     if (open) {
       loadEntries();
     }
   }, [open, loadEntries]);
-
-  // Exit selection mode when sidebar is closed
-  useEffect(() => {
-    if (!open && selectionMode) {
-      /*
-       * Don't clear selection state anymore when sidebar closes
-       * This allows the selection to persist when reopening the sidebar
-       */
-      console.log('Sidebar closed, preserving selection state');
-    }
-  }, [open, selectionMode]);
 
   useEffect(() => {
     const enterThreshold = 40;
@@ -306,7 +262,7 @@ export const Menu = () => {
 
   const handleDuplicate = async (id: string) => {
     await duplicateCurrentChat(id);
-    loadEntries(); // Reload the list after duplication
+    loadEntries();
   };
 
   const handleSettingsClick = () => {
@@ -319,7 +275,6 @@ export const Menu = () => {
   };
 
   const setDialogContentWithLogging = useCallback((content: DialogContent) => {
-    console.log('Setting dialog content:', content);
     setDialogContent(content);
   }, []);
 
@@ -330,21 +285,46 @@ export const Menu = () => {
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={menuVariants}
-        style={{ width: '340px' }}
+        style={{ width: '300px' }}
         className={classNames(
-          'flex selection-accent flex-col side-menu fixed top-0 h-full',
-          'bg-[var(--vscode-bg)] border-r border-[var(--vscode-border)]',
-          'shadow-sm text-sm',
+          'flex flex-col fixed top-0 h-full cx-sidebar',
           isSettingsOpen ? 'z-40' : 'z-sidebar',
         )}
       >
-        <div className="h-12 flex items-center justify-between px-4 bg-[var(--vscode-sidebar-bg)] border-b border-[var(--vscode-border)]">
-          <div className="text-gray-900 dark:text-white font-medium"></div>
-          <div className="flex items-center gap-3">
-            <span className="font-medium text-sm text-gray-900 dark:text-white truncate">
-              {profile?.username || 'Guest User'}
+        <div
+          className="cx-sidebar-header h-14 flex items-center justify-between px-4"
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className="w-6 h-6 rounded-[7px] flex items-center justify-center text-xs"
+              style={{
+                background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15))',
+                border: '1px solid rgba(56, 189, 248, 0.15)',
+              }}
+            >
+              ⚡
+            </div>
+            <span
+              className="text-sm font-semibold tracking-tight"
+              style={{ color: '#e2e8f0' }}
+            >
+              History
             </span>
-            <div className="flex items-center justify-center w-[32px] h-[32px] overflow-hidden bg-[var(--vscode-hover)] text-[var(--vscode-text-muted)] rounded-full shrink-0">
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-xs font-medium"
+              style={{ color: '#64748b' }}
+            >
+              {profile?.username || 'Guest'}
+            </span>
+            <div
+              className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
               {profile?.avatar ? (
                 <img
                   src={profile.avatar}
@@ -354,79 +334,125 @@ export const Menu = () => {
                   decoding="sync"
                 />
               ) : (
-                <Icon name="user" size={18} />
+                <Icon name="user" size={14} style={{ color: '#64748b' }} />
               )}
             </div>
           </div>
         </div>
+
         <CurrentDateTime />
-        <div className="flex-1 flex flex-col h-full w-full overflow-hidden">
-          <div className="p-4 space-y-3">
+
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="p-3 space-y-2">
             <div className="flex gap-2">
               <a
                 href="/"
-                className="flex-1 flex gap-2 items-center bg-gray-100 text-[var(--vscode-text)] hover:bg-gray-200 rounded-lg px-4 py-2 transition-colors"
+                className="flex-1 flex gap-2 items-center justify-center rounded-[10px] px-3 py-2 text-[13px] font-medium transition-all duration-200"
+                style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.15)',
+                  color: '#38bdf8',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(56, 189, 248, 0.13)';
+                  e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.15)';
+                }}
               >
-                <Icon name="plus-circle" size={16} />
-                <span className="text-sm font-medium">Start new chat</span>
+                <Icon name="plus-circle" size={14} />
+                <span>New chat</span>
               </a>
               <button
                 onClick={toggleSelectionMode}
-                className={classNames(
-                  'flex gap-1 items-center rounded-lg px-3 py-2 transition-colors',
-                  selectionMode
-                    ? 'bg-accent-700/20 text-accent-400 ring-1 ring-accent-500/50'
-                    : 'bg-[var(--vscode-hover)] text-[var(--vscode-text-muted)] hover:text-[var(--vscode-text)] border border-[var(--vscode-border)]',
-                )}
+                className="flex items-center justify-center rounded-[10px] px-2.5 py-2 transition-all duration-200"
+                style={{
+                  background: selectionMode ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255, 255, 255, 0.04)',
+                  border: `1px solid ${selectionMode ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.07)'}`,
+                  color: selectionMode ? '#38bdf8' : '#64748b',
+                }}
                 aria-label={selectionMode ? 'Exit selection mode' : 'Enter selection mode'}
               >
-                <Icon name={selectionMode ? 'x' : 'check-square'} size={16} />
+                <Icon name={selectionMode ? 'x' : 'check-square'} size={14} />
               </button>
             </div>
-            <div className="relative w-full">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <Icon name="search" size={14} className="text-slate-500" />
+
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Icon name="search" size={13} style={{ color: '#475569' }} />
               </div>
               <input
-                className="w-full bg-[var(--vscode-sidebar-bg)] relative pl-9 pr-3 py-2 rounded-lg focus:outline-none border border-[var(--vscode-border)] focus:ring-1 focus:ring-[var(--vscode-active-border)] text-sm text-[var(--vscode-text)] placeholder-[var(--vscode-text-muted)]"
+                className="cx-search-input w-full pl-9 pr-3 py-2 rounded-[9px] text-[13px]"
                 type="search"
-                placeholder="Search chats..."
+                placeholder="Search sessions..."
                 onChange={handleSearchChange}
                 aria-label="Search chats"
+                style={{ background: 'transparent' }}
               />
             </div>
           </div>
-          <div className="flex items-center justify-between text-sm px-4 py-2">
-            <div className="font-medium text-gray-600 dark:text-gray-400">Your Chats</div>
+
+          <div className="flex items-center justify-between px-4 pb-2">
+            <span className="text-[11px] font-medium tracking-[0.05em] uppercase" style={{ color: '#475569' }}>
+              Sessions
+            </span>
             {selectionMode && (
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={selectAll}>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={selectAll}
+                  className="text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors"
+                  style={{ color: '#64748b', background: 'rgba(255, 255, 255, 0.04)' }}
+                >
                   {selectedItems.length === filteredList.length ? 'Deselect all' : 'Select all'}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
+                </button>
+                <button
                   onClick={handleBulkDeleteClick}
                   disabled={selectedItems.length === 0}
+                  className="text-[11px] font-medium px-2 py-0.5 rounded-md transition-colors disabled:opacity-40"
+                  style={{ color: '#f87171', background: 'rgba(239, 68, 68, 0.08)' }}
                 >
-                  Delete selected
-                </Button>
+                  Delete
+                </button>
               </div>
             )}
           </div>
-          <div className="flex-1 overflow-auto px-3 pb-3">
+
+          <div className="flex-1 overflow-y-auto px-2 pb-2 modern-scrollbar">
             {filteredList.length === 0 && (
-              <div className="px-4 text-gray-500 dark:text-gray-400 text-sm">
-                {list.length === 0 ? 'No previous conversations' : 'No matches found'}
+              <div
+                className="flex flex-col items-center justify-center py-12 px-4 text-center"
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
+                  style={{ background: 'rgba(255, 255, 255, 0.04)' }}
+                >
+                  <Icon name="chat" size={18} style={{ color: '#475569' }} />
+                </div>
+                <p className="text-[12px] font-medium" style={{ color: '#475569' }}>
+                  {list.length === 0 ? 'No sessions yet' : 'No matches found'}
+                </p>
+                <p className="text-[11px] mt-1" style={{ color: '#334155' }}>
+                  {list.length === 0 ? 'Start a new conversation' : 'Try a different search'}
+                </p>
               </div>
             )}
+
             <DialogRoot open={dialogContent !== null}>
               {binDates(filteredList).map(({ category, items }) => (
-                <div key={category} className="mt-2 first:mt-0 space-y-1">
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 sticky top-0 z-1 bg-slate-900 px-4 py-1">
+                <div key={category} className="mt-3 first:mt-1">
+                  <div
+                    className="text-[10px] font-semibold tracking-[0.08em] uppercase px-2 py-1 mb-1 sticky top-0"
+                    style={{
+                      color: '#374151',
+                      background: 'rgba(8, 12, 20, 0.96)',
+                    }}
+                  >
                     {category}
                   </div>
-                  <div className="space-y-0.5 pr-1">
+                  <div className="space-y-0.5">
                     {items.map((item) => (
                       <HistoryItem
                         key={item.id}
@@ -435,7 +461,6 @@ export const Menu = () => {
                         onDelete={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
-                          console.log('Delete triggered for item:', item);
                           setDialogContentWithLogging({ type: 'delete', item });
                         }}
                         onDuplicate={() => handleDuplicate(item.id)}
@@ -447,29 +472,43 @@ export const Menu = () => {
                   </div>
                 </div>
               ))}
+
               <Dialog onBackdrop={closeDialog} onClose={closeDialog}>
                 {dialogContent?.type === 'delete' && (
                   <>
-                    <div className="p-6 bg-slate-900">
-                      <DialogTitle className="text-gray-900 dark:text-white">Delete Chat?</DialogTitle>
-                      <DialogDescription className="mt-2 text-gray-600 dark:text-gray-400">
+                    <div
+                      className="p-5"
+                      style={{ background: 'rgba(8, 12, 20, 0.98)' }}
+                    >
+                      <DialogTitle style={{ color: '#f0f4f8', fontSize: '15px', fontWeight: 600 }}>
+                        Delete session?
+                      </DialogTitle>
+                      <DialogDescription
+                        className="mt-2"
+                        style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.6 }}
+                      >
                         <p>
-                          You are about to delete{' '}
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {dialogContent.item.description}
+                          This will permanently delete{' '}
+                          <span style={{ color: '#94a3b8', fontWeight: 500 }}>
+                            "{dialogContent.item.description}"
                           </span>
+                          .
                         </p>
-                        <p className="mt-2">Are you sure you want to delete this chat?</p>
                       </DialogDescription>
                     </div>
-                    <div className="flex justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+                    <div
+                      className="flex justify-end gap-2 px-5 py-4"
+                      style={{
+                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                        background: 'rgba(12, 17, 32, 0.98)',
+                      }}
+                    >
                       <DialogButton type="secondary" onClick={closeDialog}>
                         Cancel
                       </DialogButton>
                       <DialogButton
                         type="danger"
                         onClick={(event) => {
-                          console.log('Dialog delete button clicked for item:', dialogContent.item);
                           deleteItem(event, dialogContent.item);
                           closeDialog();
                         }}
@@ -481,43 +520,54 @@ export const Menu = () => {
                 )}
                 {dialogContent?.type === 'bulkDelete' && (
                   <>
-                    <div className="p-6 bg-slate-900">
-                      <DialogTitle className="text-gray-900 dark:text-white">Delete Selected Chats?</DialogTitle>
-                      <DialogDescription className="mt-2 text-gray-600 dark:text-gray-400">
+                    <div
+                      className="p-5"
+                      style={{ background: 'rgba(8, 12, 20, 0.98)' }}
+                    >
+                      <DialogTitle style={{ color: '#f0f4f8', fontSize: '15px', fontWeight: 600 }}>
+                        Delete {dialogContent.items.length} sessions?
+                      </DialogTitle>
+                      <DialogDescription
+                        className="mt-2"
+                        style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.6 }}
+                      >
                         <p>
-                          You are about to delete {dialogContent.items.length}{' '}
-                          {dialogContent.items.length === 1 ? 'chat' : 'chats'}:
+                          This action cannot be undone. All selected sessions will be permanently removed.
                         </p>
-                        <div className="mt-2 max-h-32 overflow-auto border border-gray-100 dark:border-gray-800 rounded-md bg-gray-50 dark:bg-gray-900 p-2">
-                          <ul className="list-disc pl-5 space-y-1">
+                        <div
+                          className="mt-3 max-h-32 overflow-auto rounded-[8px] p-2.5"
+                          style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                        >
+                          <ul className="space-y-1">
                             {dialogContent.items.map((item) => (
-                              <li key={item.id} className="text-sm">
-                                <span className="font-medium text-gray-900 dark:text-white">{item.description}</span>
+                              <li key={item.id} className="text-[12px] flex items-center gap-2" style={{ color: '#94a3b8' }}>
+                                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#475569' }} />
+                                {item.description}
                               </li>
                             ))}
                           </ul>
                         </div>
-                        <p className="mt-3">Are you sure you want to delete these chats?</p>
                       </DialogDescription>
                     </div>
-                    <div className="flex justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+                    <div
+                      className="flex justify-end gap-2 px-5 py-4"
+                      style={{
+                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                        background: 'rgba(12, 17, 32, 0.98)',
+                      }}
+                    >
                       <DialogButton type="secondary" onClick={closeDialog}>
                         Cancel
                       </DialogButton>
                       <DialogButton
                         type="danger"
                         onClick={() => {
-                          /*
-                           * Pass the current selectedItems to the delete function.
-                           * This captures the state at the moment the user confirms.
-                           */
                           const itemsToDeleteNow = [...selectedItems];
-                          console.log('Bulk delete confirmed for', itemsToDeleteNow.length, 'items', itemsToDeleteNow);
                           deleteSelectedItems(itemsToDeleteNow);
                           closeDialog();
                         }}
                       >
-                        Delete
+                        Delete all
                       </DialogButton>
                     </div>
                   </>
@@ -525,7 +575,11 @@ export const Menu = () => {
               </Dialog>
             </DialogRoot>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3">
+
+          <div
+            className="flex items-center justify-between px-3 py-3"
+            style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}
+          >
             <SettingsButton onClick={handleSettingsClick} />
             <ThemeSwitch />
           </div>

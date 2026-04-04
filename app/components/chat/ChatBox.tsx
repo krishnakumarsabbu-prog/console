@@ -67,8 +67,8 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
   return (
     <div
       className={classNames(
-        'relative p-3 rounded-2xl relative w-full max-w-chat mx-auto z-prompt transition-all duration-300',
-        'devcure-chatbox',
+        'relative p-3 w-full max-w-chat mx-auto z-prompt',
+        'cx-composer',
       )}
     >
       <div className="hidden">
@@ -166,7 +166,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
         )
       }
       <div
-        className={classNames('relative rounded-xl transition-all duration-200 devcure-input-wrapper')}
+        className={classNames('relative transition-all duration-200 cx-input-field')}
       >
         <textarea
           ref={props.textareaRef}
@@ -260,21 +260,27 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
           <div className="flex gap-1 items-center">
             <ColorSchemeDialog designScheme={props.designScheme} setDesignScheme={props.setDesignScheme} />
 
-            <IconButton title="Upload file" className="transition-all text-gray-400 hover:text-teal-400" onClick={() => props.handleFileUpload()}>
+            <IconButton
+              title="Upload file"
+              className="transition-all"
+              style={{ color: '#64748b' }}
+              onClick={() => props.handleFileUpload()}
+            >
               <Icon name="paperclip" />
             </IconButton>
 
             <IconButton
               title="Enhance prompt"
               disabled={props.input.length === 0 || props.enhancingPrompt}
-              className={classNames('transition-all text-gray-400 hover:text-teal-400', props.enhancingPrompt ? 'opacity-100' : '')}
+              className={classNames('transition-all', props.enhancingPrompt ? 'opacity-100' : '')}
+              style={{ color: props.enhancingPrompt ? '#38bdf8' : '#64748b' }}
               onClick={() => {
                 props.enhancePrompt?.();
                 toast.success('Prompt enhanced!');
               }}
             >
               {props.enhancingPrompt ? (
-                <Icon name="spinner" className="text-teal-400 animate-spin" />
+                <Icon name="spinner" className="animate-spin" />
               ) : (
                 <Icon name="sparkle" />
               )}
@@ -291,31 +297,32 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 title="Discuss"
                 className={classNames(
                   'transition-all flex items-center gap-1 px-1.5',
-                  props.chatMode === 'discuss'
-                    ? 'devcure-btn-active'
-                    : 'text-gray-400 hover:text-teal-400',
+                  props.chatMode === 'discuss' ? 'cx-btn-active' : '',
                 )}
+                style={{ color: props.chatMode === 'discuss' ? '#38bdf8' : '#64748b' }}
                 onClick={() => {
                   props.setChatMode?.(props.chatMode === 'discuss' ? 'build' : 'discuss');
                 }}
               >
                 <Icon name="chat" />
-                {props.chatMode === 'discuss' ? <span>Discuss</span> : <span />}
+                {props.chatMode === 'discuss' ? <span className="text-xs">Discuss</span> : null}
               </IconButton>
             )}
             <IconButton
               title="Model Settings"
               className={classNames('transition-all flex items-center gap-1', {
-                'devcure-btn-active':
-                  props.isModelSettingsCollapsed,
-                'text-gray-400 hover:text-teal-400':
-                  !props.isModelSettingsCollapsed,
+                'cx-btn-active': props.isModelSettingsCollapsed,
               })}
+              style={{ color: props.isModelSettingsCollapsed ? '#38bdf8' : '#64748b' }}
               onClick={() => props.setIsModelSettingsCollapsed(!props.isModelSettingsCollapsed)}
               disabled={!props.providerList || props.providerList.length === 0}
             >
               <Icon name={props.isModelSettingsCollapsed ? 'caret-right' : 'caret-down'} />
-              {props.isModelSettingsCollapsed ? <span className="text-xs">{props.model}</span> : <span />}
+              {props.isModelSettingsCollapsed ? (
+                <span className="text-xs font-mono" style={{ color: '#94a3b8' }}>
+                  {props.model}
+                </span>
+              ) : null}
             </IconButton>
           </div>
           {props.input.length > 3 ? (
